@@ -10,7 +10,7 @@ export default function Page() {
 
       <main>
         <section className="flex flex-col items-center justify-center text-center gap-12 px-8 py-24">
-          <h1 className="text-3xl font-extrabold">Pokedle ⚡️</h1>
+          <h1 className="text-3xl font-extrabold">Pokedle</h1>
 
           <a
             className="btn btn-primary"

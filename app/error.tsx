@@ -20,7 +20,6 @@ export default function Error({
             xmlns="http://www.w3.org/2000/svg"
             data-name="Layer 1"
             className="w-36 h-36 md:w-64 md:h-64"
-            
             viewBox="0 0 509.04617 507.58297"
           >
             <path
