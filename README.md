@@ -1,4 +1,4 @@
-# Pokedle 🎮
+# Pokedle
 
 Aplicación web tipo **Wordle** adaptada a la franquicia Pokémon, integrada con [PokeAPI](https://pokeapi.co/) para obtener datos en tiempo real.
 
@@ -6,9 +6,9 @@ Aplicación web tipo **Wordle** adaptada a la franquicia Pokémon, integrada con
 
 Adivina el **Pokémon diario** en un número limitado de intentos. Cada vez que introduces un Pokémon, el sistema te da pistas comparando sus atributos con el objetivo:
 
--   🔢 **Generación** — mayor, menor o igual
--   🔥 **Tipo(s)** — coincidencia parcial o total
--   🌿 **Hábitat / Color / Cadena de evolución** — coincidencia o no
+-   **Generación** — mayor, menor o igual
+-   **Tipo(s)** — coincidencia parcial o total
+-   **Hábitat / Color / Cadena de evolución** — coincidencia o no
 
 El progreso diario **persiste al recargar** la página.
 
