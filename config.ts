@@ -7,7 +7,7 @@ const config = {
   appDescription:
     "Adivina el Pokémon diario al estilo Wordle. Compara atributos como generación, tipo y hábitat con pistas en cada intento. Compite en el ranking global y accede a desafíos históricos.",
   // REQUIRED (no https://, not trialing slash at the end, just the naked domain)
-  domainName: "",
+  domainName: "pokedle.vercel.app",
   crisp: {
     // Crisp website ID. IF YOU DON'T USE CRISP: just remove this => Then add a support email in this config file (resend.supportEmail) otherwise customer support won't work.
     id: "",
