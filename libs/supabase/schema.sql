@@ -99,3 +99,19 @@ CREATE POLICY "Solo admins pueden modificar Pokémon"
         auth.role() = 'authenticated' AND 
         auth.jwt() ->> 'role' = 'admin'
     );
+
+-- Habilitar RLS en la tabla de cola
+ALTER TABLE pokemon_update_queue ENABLE ROW LEVEL SECURITY;
+
+-- Políticas para pokemon_update_queue
+
+-- 1. Lectura: permitir a usuarios autenticados ver el estado de la cola
+CREATE POLICY "Usuarios autenticados pueden ver la cola"
+    ON pokemon_update_queue
+    FOR SELECT
+    TO authenticated
+    USING (true);
+
+-- 2. Escritura: NADIE puede escribir con anon/authenticated.
+--    Solo el cron (que usa service_role) puede insertar/actualizar/borrar.
+--    service_role omite RLS automáticamente, así que no necesita política.

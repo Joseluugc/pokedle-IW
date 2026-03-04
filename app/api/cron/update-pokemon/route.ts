@@ -1,5 +1,13 @@
-import { createClient } from '@/libs/supabase/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+
+// Cliente con service_role para operaciones del cron (omite RLS)
+function createServiceClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 interface PokemonUpdateResult {
   id: number;
@@ -31,7 +39,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
 
-  const supabase = await createClient();
+  const supabase = createServiceClient();
   
   try {
     // 1. Obtener próximo Pokémon a actualizar
