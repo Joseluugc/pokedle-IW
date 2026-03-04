@@ -55,7 +55,26 @@ CREATE INDEX idx_pokemon_color ON pokemon (color);
 CREATE INDEX idx_pokemon_habitat ON pokemon (habitat);
 
 -- Índice GIN para búsqueda en JSON de estadísticas
-CREATE INDEX idx_pokemon_estadisticas ON pokemon USING GIN (estadisticas); 
+CREATE INDEX idx_pokemon_estadisticas ON pokemon USING GIN (estadisticas);
+
+-------------------------------------
+-- Tabla de cola de actualización --
+-------------------------------------
+CREATE TABLE IF NOT EXISTS pokemon_update_queue (
+  id SERIAL PRIMARY KEY,
+  pokemon_id INTEGER NOT NULL UNIQUE,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'error')),
+  last_attempt TIMESTAMPTZ,
+  locked_until TIMESTAMPTZ,
+  completed_at TIMESTAMPTZ,
+  error_count INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Índices para rendimiento
+CREATE INDEX idx_queue_status ON pokemon_update_queue(status);
+CREATE INDEX idx_queue_locked ON pokemon_update_queue(locked_until);
+CREATE INDEX idx_queue_last_attempt ON pokemon_update_queue(last_attempt);
 
 -- Habilitar RLS en todas las tablas
 ALTER TABLE pokemon ENABLE ROW LEVEL SECURITY;
