@@ -17,15 +17,14 @@ interface PokemonUpdateResult {
 interface PokemonData {
   id: number;
   nombre: string;
-  numero_pokedex: number;
   tipos: string[];
   peso: number;
   altura: number;
   habilidades: string[];
   estadisticas: Record<string, number>;
-  imagen_url: string;
   color?: string;
   generacion?: string;
+  habitat?: string;
 }
 
 // Configurar el cron job (se ejecuta cada 10 minutos = 144 veces al día)
@@ -48,14 +47,27 @@ export async function GET(request: NextRequest) {
       .select('pokemon_id')
       .eq('status', 'pending')
       .order('last_attempt', { ascending: true })
-      .limit(5) // Actualizar 5 por ejecución para llegar a 150/día
       .is('locked_until', null)
-      .limit(5);
+      .limit(193); // Actualizar 5 por ejecución para llegar a 150/día
     
     if (pendingError) throw pendingError;
     
     if (!pendingPokemon || pendingPokemon.length === 0) {
-      return NextResponse.json({ message: 'No hay Pokémon pendientes' });
+      // Comprobar si todos están completados
+      const { count } = await supabase
+        .from('pokemon_update_queue')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'completed');
+
+      return NextResponse.json({ 
+        message: 'No hay Pokémon pendientes',
+        completed: count,
+        total: 1025,
+        done: count === 1025,
+        hint: count === 1025 
+          ? 'Todos los Pokémon han sido cargados. Puedes eliminar el cron de vercel.json y redesplegar.' 
+          : 'Puede haber Pokémon con errores. Revisa la cola.'
+      });
     }
 
     // 2. Bloquear estos Pokémon para evitar duplicados
@@ -96,7 +108,7 @@ export async function GET(request: NextRequest) {
         results.push({ id: item.pokemon_id, status: 'success' });
         
       } catch (error) {
-        console.error(`Error actualizando #${item.pokemon_id}:`, error instanceof Error ? error.message : 'Error desconocido');
+        console.error(`Error actualizando #${item.pokemon_id}:`, error);
         
         // Marcar para reintento (obtener el error_count actual e incrementarlo)
         const { data: current } = await supabase
@@ -143,7 +155,6 @@ async function fetchPokemonFromAPI(id: number): Promise<PokemonData> {
   const pokemonDataFormatted: PokemonData = {
     id: pokemonData.id,
     nombre: pokemonData.name,
-    numero_pokedex: pokemonData.id,
     tipos: pokemonData.types.map((t: any) => t.type.name),
     peso: pokemonData.weight,
     altura: pokemonData.height,
@@ -152,9 +163,9 @@ async function fetchPokemonFromAPI(id: number): Promise<PokemonData> {
       acc[s.stat.name] = s.base_stat;
       return acc;
     }, {}),
-    imagen_url: pokemonData.sprites.other['official-artwork'].front_default,
     color: speciesData.color?.name,
-    generacion: speciesData.generation?.name
+    generacion: speciesData.generation?.name,
+    habitat: speciesData.habitat?.name ?? null
   };
   
   return pokemonDataFormatted;

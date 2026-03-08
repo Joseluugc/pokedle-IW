@@ -24,11 +24,7 @@ CREATE TABLE pokemon (
     habilidades TEXT[] NOT NULL, -- Array de habilidades
     
     -- Estadísticas
-    estadisticas JSONB NOT NULL, -- Objeto con hp, attack, defense, etc.
-    
-    -- Imágenes
-    imagen_url TEXT NOT NULL,
-    
+    estadisticas JSONB NOT NULL, -- Objeto con hp, attack, defense, etc.    
     -- Datos de especie
     color TEXT,
     generacion pokemon_generation,
