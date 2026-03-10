@@ -115,12 +115,28 @@ CREATE POLICY "Usuarios autenticados pueden ver la cola"
 
 -- Base de datos de los usuarios
 
-CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    email TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'authenticated' CHECK (role IN ('authenticated', 'admin')),
-    created_at TIMESTAMPTZ DEFAULT NOW()
+-- 1. Creación de la tabla de perfiles basada en RI-01
+CREATE TABLE public.perfiles (
+  id uuid REFERENCES auth.users NOT NULL PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  racha_actual INTEGER DEFAULT 0,
+  racha_maxima INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+-- 2. Habilitar Seguridad de Nivel de Fila (RLS) según RNF-09 y RNF-10
+ALTER TABLE public.perfiles ENABLE ROW LEVEL SECURITY;
+
+-- 3. Definición de Políticas RLS (Seguridad solicitada en RNF-09)
+-- Política: Los perfiles son públicos para el ranking (RF-12)
+CREATE POLICY "Los perfiles son visibles para todos" 
+ON public.perfiles FOR SELECT 
+USING ( true );
+
+-- Política: Solo el propio usuario puede actualizar su racha y datos (RNF-09)
+CREATE POLICY "Los usuarios pueden actualizar su propio perfil" 
+ON public.perfiles FOR UPDATE 
+USING ( auth.uid() = id );
 
 
