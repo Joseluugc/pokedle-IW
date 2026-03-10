@@ -116,7 +116,7 @@ CREATE POLICY "Usuarios autenticados pueden ver la cola"
 -- Base de datos de los usuarios
 
 -- 1. Creación de la tabla de perfiles basada en RI-01
-CREATE TABLE public.perfiles (
+CREATE TABLE IF NOT EXISTS perfiles (
   id uuid REFERENCES auth.users NOT NULL PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
   email TEXT UNIQUE NOT NULL,
