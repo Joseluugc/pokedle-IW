@@ -111,3 +111,16 @@ CREATE POLICY "Usuarios autenticados pueden ver la cola"
 -- 2. Escritura: NADIE puede escribir con anon/authenticated.
 --    Solo el cron (que usa service_role) puede insertar/actualizar/borrar.
 --    service_role omite RLS automáticamente, así que no necesita política.
+
+
+-- Base de datos de los usuarios
+
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'authenticated' CHECK (role IN ('authenticated', 'admin')),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+
