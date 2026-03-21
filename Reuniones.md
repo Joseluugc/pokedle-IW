@@ -54,7 +54,7 @@ Tras evaluar el listado total de 12 Casos de Uso, el equipo ha consensuado la si
 
 ---
 
-## Acta de Reunión: 21 de Marzo de 2026
+## Acta de Reunión: 18 de Marzo de 2026
 **Asistentes:** Equipo completo (Samuel, Jose Luis, Rafael, Javier, Hugo y Raúl).  
 **Objetivo de la reunión:** Planificación y asignación de tareas para el inicio del **Sprint 3** (Fase de revisión, integración y cierre de entrega).
 
