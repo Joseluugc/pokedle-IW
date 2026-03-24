@@ -6,6 +6,9 @@ import { createClient } from "@/libs/supabase/client";
 import { Provider } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
 import config from "@/config";
+import { Inter } from "next/font/google";
+
+const font = Inter({ subsets: ["latin"] });
 
 // This a login/singup page for Supabase Auth.
 // Successfull login redirects to /api/auth/callback where the Code Exchange is processed (see app/api/auth/callback/route.js).
@@ -57,7 +60,7 @@ export default function Login() {
   };
 
   return (
-    <main className="p-8 md:p-24" data-theme={config.colors.theme}>
+    <main className={`p-8 md:p-24 min-h-screen ${font.className}`} data-theme={config.colors.theme}>
       <div className="text-center mb-4">
         <Link href="/" className="btn btn-ghost btn-sm">
           <svg

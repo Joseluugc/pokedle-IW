@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import ButtonSignin from "@/components/ButtonSignin";
+import DailyModeButton from "@/components/DailyModeButton";
+import InfiniteModeButton from "@/components/InfiniteModeButton";
 import { Press_Start_2P } from "next/font/google";
 
 const pixelFont = Press_Start_2P({ weight: "400", subsets: ["latin"] });
@@ -18,9 +20,8 @@ export default function Page() {
 
           <p className={`${pixelFont.className} text-base bg-gradient-to-r from-yellow-200 via-amber-400 to-orange-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] tracking-wide leading-relaxed`}>¡Minijuegos de Pokémon diarios!</p>
 
-          
-
-          
+          <DailyModeButton />
+          <InfiniteModeButton />
         </section>
       </main>
     </>
