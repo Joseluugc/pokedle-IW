@@ -1,12 +1,14 @@
 import { ReactNode } from "react";
-import { Inter } from "next/font/google";
+import { Inter, Press_Start_2P } from "next/font/google";
 import { Viewport } from "next";
 import { getSEOTags } from "@/libs/seo";
 import ClientLayout from "@/components/LayoutClient";
 import config from "@/config";
 import "./globals.css";
 
-const font = Inter({ subsets: ["latin"] });
+{/* const font = Inter({ subsets: ["latin"] }); */}
+
+const pixelFont = Press_Start_2P({ weight: "400", subsets: ["latin"] });
 
 export const viewport: Viewport = {
 	// Will use the primary color of your theme to show a nice theme color in the URL bar of supported browsers
@@ -24,7 +26,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 		<html
 			lang="en"
 			data-theme={config.colors.theme}
-			className={font.className}
+			className={pixelFont.className}
 		>
 			<body>
 				{/* ClientLayout contains all the client wrappers (Crisp chat support, toast messages, tooltips, etc.) */}

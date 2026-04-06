@@ -19,6 +19,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'logos-world.net',
       },
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+      },
     ],
   },
   webpack: (config, { webpack, isServer }) => {

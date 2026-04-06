@@ -1,40 +1,27 @@
 import Link from "next/link";
+import Image from "next/image";
 import ButtonSignin from "@/components/ButtonSignin";
+import DailyModeButton from "@/components/DailyModeButton";
+import InfiniteModeButton from "@/components/InfiniteModeButton";
+import { Press_Start_2P } from "next/font/google";
+
+const pixelFont = Press_Start_2P({ weight: "400", subsets: ["latin"] });
 
 export default function Page() {
   return (
     <>
       {/* <header className="p-4 flex justify-end max-w-7xl mx-auto">
         <ButtonSignin text="Login" />
-      </header> */}
+      </header> */} 
 
       <main>
-        <section className="flex flex-col items-center justify-center text-center gap-12 px-8 py-24">
-          <h1 className="text-3xl font-extrabold">Pokedle</h1>
+        <section className="flex flex-col items-center justify-center text-center gap-12 px-8 py-12">
+          <Image src="/logo.webp" alt="Pokedle" width={500} height={500} priority />
 
-          <a
-            className="btn btn-primary"
-            href="https://shipfa.st/docs"
-            target="_blank"
-          >
-            Documentation & tutorials{" "}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-5 h-5"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5 10a.75.75 0 01.75-.75h6.638L10.23 7.29a.75.75 0 111.04-1.08l3.5 3.25a.75.75 0 010 1.08l-3.5 3.25a.75.75 0 11-1.04-1.08l2.158-1.96H5.75A.75.75 0 015 10z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </a>
+          <p className={`${pixelFont.className} text-base bg-gradient-to-r from-yellow-200 via-amber-400 to-orange-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] tracking-wide leading-relaxed`}>¡Minijuegos de Pokémon diarios!</p>
 
-          <Link href="/blog" className="link link-hover text-sm">
-            Fancy a blog?
-          </Link>
+          <DailyModeButton />
+          <InfiniteModeButton />
         </section>
       </main>
     </>
