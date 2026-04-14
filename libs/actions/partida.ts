@@ -108,6 +108,73 @@ export const generarPokemonAleatorio = async (): Promise<GameState> => {
 };
 
 // ============================================
+// FUNCIÓN BUSCAR POR NOMBRE
+// ============================================
+
+/**
+ * Busca un Pokémon en la base de datos por su nombre exacto
+ * @param name - Nombre del Pokémon a buscar
+ * @returns Promise<PokemonData | null>
+ */
+export const buscarPokemonPorNombre = async (
+  name: string
+): Promise<PokemonData | null> => {
+  const normalizedName = name.toLowerCase().trim();
+
+  if (!normalizedName) {
+    return null;
+  }
+
+  const { data: pokemon, error } = await supabase
+    .from('pokemon')
+    .select('*')
+    .eq('nombre', normalizedName)
+    .single<PokemonData>();
+
+  if (error) {
+    if (error.code === 'PGRST116') {
+      return null;
+    }
+    console.error('Error buscando Pokémon:', error);
+    return null;
+  }
+
+  return pokemon;
+};
+
+// ============================================
+// FUNCIÓN BUSCAR POR NOMBRE PARCIAL (opcional)
+// ============================================
+
+/**
+ * Busca Pokémon por coincidencia parcial en el nombre
+ * @param name - Nombre o parte del nombre
+ * @returns Promise<PokemonData[]>
+ */
+export const buscarPokemonPorNombreParcial = async (
+  name: string
+): Promise<PokemonData[]> => {
+  const normalizedName = name.toLowerCase().trim();
+
+  if (!normalizedName) {
+    return [];
+  }
+
+  const { data: pokemon, error } = await supabase
+    .from('pokemon')
+    .select('*')
+    .ilike('nombre', `%${normalizedName}%`)
+    .limit(10);
+
+  if (error) {
+    console.error('Error buscando Pokémon:', error);
+    return [];
+  }
+
+  return pokemon || [];
+};
+
+// ============================================
 // FUNCIONES HELPER
 // ============================================
 
@@ -119,3 +186,4 @@ const generateGameId = (): string => {
   const random = Math.random().toString(36).substring(2, 8);
   return `${timestamp}_${random}`;
 };
+
