@@ -78,7 +78,7 @@ export const createGame = async (
  * Obtiene un Pokémon aleatorio de la base de datos y crea una partida
  * @returns Promise<GameState> - Partida creada con Pokémon aleatorio
  */
-export const generarPokemonAleatorio = async (): Promise<GameState> => {
+export const generateRandomPokemon = async (): Promise<GameState> => {
   try {
     // 1. Obtener el total de Pokémon en la base de datos
     const { count, error: countError } = await supabase
@@ -116,7 +116,7 @@ export const generarPokemonAleatorio = async (): Promise<GameState> => {
  * @param name - Nombre del Pokémon a buscar
  * @returns Promise<PokemonData | null>
  */
-export const buscarPokemonPorNombre = async (
+export const searchPokemonByName = async (
   name: string
 ): Promise<PokemonData | null> => {
   const normalizedName = name.toLowerCase().trim();
@@ -142,18 +142,18 @@ export const buscarPokemonPorNombre = async (
   return pokemon;
 };
 
-// ============================================
-// FUNCIÓN BUSCAR POR NOMBRE PARCIAL (opcional)
+/// ============================================
+// FUNCIÓN BUSCAR POR NOMBRE PARCIAL (empieza por)
 // ============================================
 
 /**
- * Busca Pokémon por coincidencia parcial en el nombre
- * @param name - Nombre o parte del nombre
- * @returns Promise<PokemonData[]>
+ * Busca Pokémon cuyo nombre empiece por el texto proporcionado
+ * @param name - Inicio del nombre del Pokémon
+ * @returns Promise<{ nombre: string; imagen: string }[]> - Lista de Pokémon con nombre e imagen
  */
-export const buscarPokemonPorNombreParcial = async (
+export const searchPokemonByNamePartial = async (
   name: string
-): Promise<PokemonData[]> => {
+): Promise<{ nombre: string; imagen: string }[]> => {
   const normalizedName = name.toLowerCase().trim();
 
   if (!normalizedName) {
@@ -162,8 +162,8 @@ export const buscarPokemonPorNombreParcial = async (
 
   const { data: pokemon, error } = await supabase
     .from('pokemon')
-    .select('*')
-    .ilike('nombre', `%${normalizedName}%`)
+    .select('id, nombre')
+    .ilike('nombre', `${normalizedName}%`)  // ← Cambiado: solo empieza por
     .limit(10);
 
   if (error) {
@@ -171,7 +171,12 @@ export const buscarPokemonPorNombreParcial = async (
     return [];
   }
 
-  return pokemon || [];
+  const resultados = pokemon.map(p => ({
+    nombre: p.nombre,
+    imagen: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.id}.png`
+  }));
+
+  return resultados;
 };
 
 // ============================================
