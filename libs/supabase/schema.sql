@@ -139,4 +139,9 @@ CREATE POLICY "Los usuarios pueden actualizar su propio perfil"
 ON public.perfiles FOR UPDATE 
 USING ( auth.uid() = id );
 
+-- Política: cada usuario autenticado puede crear su propio perfil al registrarse
+CREATE POLICY "Los usuarios pueden crear su propio perfil"
+ON public.perfiles FOR INSERT
+WITH CHECK (auth.uid() = id);
+
 
