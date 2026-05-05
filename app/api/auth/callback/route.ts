@@ -9,6 +9,7 @@ async function ensureProfileExists(user: User) {
   if (!user.email) return;
 
   const username =
+    user.user_metadata?.username ??
     user.user_metadata?.preferred_username ??
     user.user_metadata?.user_name ??
     user.user_metadata?.name ??
