@@ -1,14 +1,11 @@
-import { GameMode, GameState, PokemonData } from '@/types';
-import { createClient } from '@supabase/supabase-js';
+import { GameState, PokemonData } from '@/types';
+import { createClient } from '@/libs/supabase/client';
 
 // ============================================
 // CLIENTE DE SUPABASE
 // ============================================
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+const supabase = createClient();
 
 // ============================================
 // FUNCIÓN PRINCIPAL

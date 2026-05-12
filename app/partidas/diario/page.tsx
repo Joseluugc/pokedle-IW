@@ -11,8 +11,51 @@ const DiarioPage = () => {
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState<{ nombre: string; imagen: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDailyLoading, setIsDailyLoading] = useState(true);
+  const [dailyError, setDailyError] = useState<string | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Inicializar partida diaria compartida
+  useEffect(() => {
+    let cancelled = false;
+
+    const initDailyGame = async () => {
+      try {
+        const response = await fetch('/api/partidas/diario/target', {
+          method: 'GET',
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          throw new Error('No se pudo cargar la partida diaria');
+        }
+
+        const payload = await response.json();
+        if (!payload?.ok) {
+          throw new Error(payload?.error ?? 'Respuesta inválida del servidor');
+        }
+
+        if (!cancelled) {
+          setDailyError(null);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setDailyError(error instanceof Error ? error.message : 'Error desconocido');
+        }
+      } finally {
+        if (!cancelled) {
+          setIsDailyLoading(false);
+        }
+      }
+    };
+
+    initDailyGame();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Cerrar sugerencias al hacer clic fuera
   useEffect(() => {
@@ -27,6 +70,12 @@ const DiarioPage = () => {
 
   // Buscar sugerencias con debounce
   useEffect(() => {
+    if (isDailyLoading || dailyError) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
     if (inputValue.trim().length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -48,7 +97,7 @@ const DiarioPage = () => {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [inputValue]);
+  }, [inputValue, isDailyLoading, dailyError]);
 
   const handleSelect = (nombre: string) => {
     setInputValue(nombre);
@@ -72,10 +121,17 @@ const DiarioPage = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-            placeholder="Nombre del pokemon"
+            placeholder={isDailyLoading ? 'Cargando partida diaria...' : 'Nombre del pokemon'}
             autoComplete="off"
+            disabled={isDailyLoading || !!dailyError}
             className={`${pixelFont.className} w-full px-4 py-3 text-sm text-amber-900 placeholder-amber-600/60 bg-yellow-100/80 border-2 border-amber-400 rounded-md shadow-[0_0_10px_rgba(251,191,36,0.4),inset_0_0_10px_rgba(255,255,200,0.3)] outline-none focus:border-yellow-300 focus:shadow-[0_0_16px_rgba(253,224,71,0.5),inset_0_0_10px_rgba(255,255,200,0.3)] transition-all duration-200`}
           />
+
+          {dailyError && (
+            <p className="mt-2 text-xs text-red-200 text-left">
+              Error cargando el modo diario. Inténtalo de nuevo en unos segundos.
+            </p>
+          )}
 
           {/* Indicador de carga */}
           {isLoading && (

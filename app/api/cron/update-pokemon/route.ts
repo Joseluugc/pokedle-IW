@@ -1,13 +1,5 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
-
-// Cliente con service_role para operaciones del cron (omite RLS)
-function createServiceClient() {
-  return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-}
+import { createServiceClient } from '@/libs/supabase/service';
 
 interface PokemonUpdateResult {
   id: number;
