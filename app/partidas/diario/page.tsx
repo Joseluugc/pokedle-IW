@@ -4,6 +4,7 @@ import Image from 'next/image'
 import React, { useState, useEffect, useRef } from 'react'
 import { Press_Start_2P } from "next/font/google";
 import { searchPokemonByNamePartial } from '@/libs/actions/partida';
+import GuessGrid, { type GuessEntry } from '@/components/GuessGrid';
 
 const pixelFont = Press_Start_2P({ weight: "400", subsets: ["latin"] });
 
@@ -11,9 +12,12 @@ const DiarioPage = () => {
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState<{ nombre: string; imagen: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmittingGuess, setIsSubmittingGuess] = useState(false);
   const [isDailyLoading, setIsDailyLoading] = useState(true);
   const [dailyError, setDailyError] = useState<string | null>(null);
+  const [guessError, setGuessError] = useState<string | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [guesses, setGuesses] = useState<GuessEntry[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Inicializar partida diaria compartida
@@ -76,7 +80,7 @@ const DiarioPage = () => {
       return;
     }
 
-    if (inputValue.trim().length < 2) {
+    if (inputValue.trim().length < 1) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
@@ -105,6 +109,41 @@ const DiarioPage = () => {
     setSuggestions([]);
   };
 
+  const handleSubmitGuess = async () => {
+    const name = inputValue.trim();
+    if (!name || isDailyLoading || dailyError || isSubmittingGuess) {
+      return;
+    }
+
+    setIsSubmittingGuess(true);
+    setGuessError(null);
+
+    try {
+      const response = await fetch('/api/partidas/diario/guess', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok || !payload?.ok || !payload?.entry) {
+        throw new Error(payload?.error ?? 'No se pudo validar el intento');
+      }
+
+      setGuesses((prev) => [payload.entry as GuessEntry, ...prev]);
+      setInputValue('');
+      setSuggestions([]);
+      setShowSuggestions(false);
+    } catch (error) {
+      setGuessError(error instanceof Error ? error.message : 'Error desconocido al validar intento');
+    } finally {
+      setIsSubmittingGuess(false);
+    }
+  };
+
   return (
     <main>
       <section className="flex flex-col items-center justify-center text-center gap-12 px-8 py-12">
@@ -116,16 +155,46 @@ const DiarioPage = () => {
 
         {/* Input con autocompletado */}
         <div ref={containerRef} className="relative w-full max-w-md">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-            placeholder={isDailyLoading ? 'Cargando partida diaria...' : 'Nombre del pokemon'}
-            autoComplete="off"
-            disabled={isDailyLoading || !!dailyError}
-            className={`${pixelFont.className} w-full px-4 py-3 text-sm text-amber-900 placeholder-amber-600/60 bg-yellow-100/80 border-2 border-amber-400 rounded-md shadow-[0_0_10px_rgba(251,191,36,0.4),inset_0_0_10px_rgba(255,255,200,0.3)] outline-none focus:border-yellow-300 focus:shadow-[0_0_16px_rgba(253,224,71,0.5),inset_0_0_10px_rgba(255,255,200,0.3)] transition-all duration-200`}
-          />
+          <div className="flex items-stretch gap-2">
+            <div className="relative flex-1 min-w-0">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSubmitGuess();
+                  }
+                }}
+                onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                placeholder={isDailyLoading ? 'Cargando partida diaria...' : 'Nombre del pokemon'}
+                autoComplete="off"
+                disabled={isDailyLoading || !!dailyError || isSubmittingGuess}
+                className={`${pixelFont.className} w-full px-4 py-3 text-sm text-amber-900 placeholder-amber-600/60 bg-yellow-100/80 border-2 border-amber-400 rounded-md shadow-[0_0_10px_rgba(251,191,36,0.4),inset_0_0_10px_rgba(255,255,200,0.3)] outline-none focus:border-yellow-300 focus:shadow-[0_0_16px_rgba(253,224,71,0.5),inset_0_0_10px_rgba(255,255,200,0.3)] transition-all duration-200`}
+              />
+              {/* Indicador de carga */}
+              {isLoading && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <div className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={handleSubmitGuess}
+              disabled={isDailyLoading || !!dailyError || isSubmittingGuess || inputValue.trim().length === 0}
+              className="aspect-square flex-shrink-0 flex items-center justify-center bg-yellow-100 border-2 border-amber-400 rounded-md shadow-[0_0_10px_rgba(251,191,36,0.4)] hover:bg-amber-100 hover:shadow-[0_0_16px_rgba(253,224,71,0.5)] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 p-1.5"
+            >
+              <Image
+                src="/pokeball.webp"
+                alt="Validar intento"
+                width={32}
+                height={32}
+                className="object-contain"
+              />
+            </button>
+          </div>
 
           {dailyError && (
             <p className="mt-2 text-xs text-red-200 text-left">
@@ -133,16 +202,18 @@ const DiarioPage = () => {
             </p>
           )}
 
-          {/* Indicador de carga */}
-          {isLoading && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
-            </div>
+          {guessError && (
+            <p className="mt-2 text-xs text-red-200 text-left">
+              {guessError}
+            </p>
           )}
 
           {/* Lista de sugerencias */}
           {showSuggestions && (
-            <ul className="absolute z-50 w-full mt-1 bg-yellow-50 border-2 border-amber-400 rounded-md shadow-[0_4px_20px_rgba(251,191,36,0.4)] max-h-60 overflow-y-auto">
+            <ul
+              className="absolute z-50 w-full mt-1 bg-yellow-50 border-2 border-amber-400 rounded-md shadow-[0_4px_20px_rgba(251,191,36,0.4)] max-h-60 overflow-y-auto overscroll-none"
+              style={{ WebkitOverflowScrolling: 'auto' }}
+            >
               {suggestions.map((poke) => (
                 <li
                   key={poke.nombre}
@@ -164,6 +235,10 @@ const DiarioPage = () => {
             </ul>
           )}
         </div>
+
+        {/* Tabla de intentos */}
+        <GuessGrid guesses={guesses} />
+
       </section>
     </main>
   );
