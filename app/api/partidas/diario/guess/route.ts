@@ -36,7 +36,7 @@ const normalizeTypes = (value: unknown): string[] => {
 
   if (typeof value === 'string') {
     const cleaned = value
-      .replace(/[\[\]{}]/g, '')
+      .replace(/\[|\]|\{|\}/g, '')
       .split(',')
       .map((v) => v.trim().toLowerCase())
       .filter(Boolean);
@@ -92,7 +92,7 @@ const compareTypes = (guessTypes: string[], targetTypes: string[]): { tipo1: Cel
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json().catch(() => null);
+    const body = await request.json().catch((): null => null);
     const name = typeof body?.name === 'string' ? body.name.toLowerCase().trim() : '';
 
     if (!name) {
