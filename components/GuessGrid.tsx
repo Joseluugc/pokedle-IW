@@ -104,12 +104,19 @@ function Arrow({ status }: { status: NumericStatus }) {
 function Cell({
   status,
   children,
+  animDelay,
 }: {
   status: CellStatus | NumericStatus
   children: ReactNode
+  animDelay?: number
 }) {
+  const style = animDelay !== undefined
+    ? { animation: `cardFlip 0.7s cubic-bezier(0.22,1,0.36,1) both`, animationDelay: `${animDelay}ms`, opacity: 0 }
+    : undefined
+
   return (
     <div
+      style={style}
       className={`flex flex-col items-center justify-center rounded-xl border-2 ${cellBg[status]} 
         min-w-[72px] w-full h-16 px-1 shadow-md`}
     >
@@ -123,9 +130,16 @@ function Cell({
 
 // ─── Celda de imagen ──────────────────────────────────────────────────────────
 
-function PokemonCell({ entry }: { entry: GuessEntry }) {
+function PokemonCell({ entry, animDelay }: { entry: GuessEntry; animDelay?: number }) {
+  const style = animDelay !== undefined
+    ? { animation: `cardFlip 0.7s cubic-bezier(0.22,1,0.36,1) both`, animationDelay: `${animDelay}ms`, opacity: 0 }
+    : undefined
+
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border-2 border-amber-400 bg-white min-w-[72px] w-full h-16 shadow-md overflow-hidden">
+    <div
+      style={style}
+      className="flex flex-col items-center justify-center rounded-xl border-2 border-amber-400 bg-white min-w-[72px] w-full h-16 shadow-md overflow-hidden"
+    >
       <Image
         src={entry.pokemon.imagen}
         alt={entry.pokemon.nombre}
@@ -157,7 +171,9 @@ function HeaderRow() {
 
 // ─── Fila de intento ──────────────────────────────────────────────────────────
 
-function GuessRow({ entry }: { entry: GuessEntry }) {
+const STAGGER_MS = 240
+
+function GuessRow({ entry, animate }: { entry: GuessEntry; animate?: boolean }) {
   const { pokemon, comparison } = entry
 
   const tipo1Label = TYPE_ES[pokemon.tipos[0]] ?? pokemon.tipos[0] ?? '—'
@@ -171,16 +187,18 @@ function GuessRow({ entry }: { entry: GuessEntry }) {
 
   const colorLabel = COLOR_ES[pokemon.color] ?? pokemon.color
 
+  const delay = (i: number) => animate ? i * STAGGER_MS : undefined
+
   return (
-    <div className="grid grid-cols-8 gap-2 w-full">
-      <PokemonCell entry={entry} />
-      <Cell status={comparison.tipo1}>{tipo1Label}</Cell>
-      <Cell status={comparison.tipo2}>{tipo2Label}</Cell>
-      <Cell status={comparison.habitat}>{habitatLabel}</Cell>
-      <Cell status={comparison.color}>{colorLabel}</Cell>
-      <Cell status={comparison.altura}>{formatAltura(pokemon.altura)}</Cell>
-      <Cell status={comparison.peso}>{formatPeso(pokemon.peso)}</Cell>
-      <Cell status={comparison.generacion}>{formatGen(pokemon.generacion)}</Cell>
+    <div className="grid grid-cols-8 gap-2 w-full" style={{ perspective: '600px' }}>
+      <PokemonCell entry={entry} animDelay={delay(0)} />
+      <Cell status={comparison.tipo1} animDelay={delay(1)}>{tipo1Label}</Cell>
+      <Cell status={comparison.tipo2} animDelay={delay(2)}>{tipo2Label}</Cell>
+      <Cell status={comparison.habitat} animDelay={delay(3)}>{habitatLabel}</Cell>
+      <Cell status={comparison.color} animDelay={delay(4)}>{colorLabel}</Cell>
+      <Cell status={comparison.altura} animDelay={delay(5)}>{formatAltura(pokemon.altura)}</Cell>
+      <Cell status={comparison.peso} animDelay={delay(6)}>{formatPeso(pokemon.peso)}</Cell>
+      <Cell status={comparison.generacion} animDelay={delay(7)}>{formatGen(pokemon.generacion)}</Cell>
     </div>
   )
 }
@@ -198,7 +216,11 @@ export default function GuessGrid({ guesses }: GuessGridProps) {
     <div className="w-full max-w-3xl flex flex-col gap-2 mt-4">
       <HeaderRow />
       {guesses.map((entry, index) => (
-        <GuessRow key={`${entry.pokemon.id}-${entry.pokemon.nombre}-${index}`} entry={entry} />
+        <GuessRow
+          key={`${entry.pokemon.id}-${entry.pokemon.nombre}-${index}`}
+          entry={entry}
+          animate={index === guesses.length - 1}
+        />
       ))}
     </div>
   )

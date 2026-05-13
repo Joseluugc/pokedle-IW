@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { getOrCreateDailyPokemon, getTodayKey } from '@/libs/daily';
+import { createClient } from '@/libs/supabase/server';
 import { createServiceClient } from '@/libs/supabase/service';
 
 type CellStatus = 'correct' | 'partial' | 'wrong';
@@ -177,13 +178,43 @@ export async function POST(request: Request) {
       imagen: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${guessed.id}.png`,
     };
 
+    const isCorrect = guessed.id === target.id;
+
+    if (isCorrect) {
+      try {
+        const authClient = await createClient();
+        const { data: { user } } = await authClient.auth.getUser();
+
+        if (user) {
+          const { data: perfil } = await supabase
+            .from('perfiles')
+            .select('racha_actual, racha_maxima')
+            .eq('id', user.id)
+            .maybeSingle<{ racha_actual: number; racha_maxima: number }>();
+
+          if (perfil) {
+            const nuevaRacha = (perfil.racha_actual ?? 0) + 1;
+            const nuevaMax = Math.max(nuevaRacha, perfil.racha_maxima ?? 0);
+
+            await supabase
+              .from('perfiles')
+              .update({ racha_actual: nuevaRacha, racha_maxima: nuevaMax })
+              .eq('id', user.id);
+          }
+        }
+      } catch (rachaError) {
+        console.error('Error actualizando racha:', rachaError);
+        // No bloqueamos la respuesta si falla la racha
+      }
+    }
+
     return NextResponse.json({
       ok: true,
       entry: {
         pokemon,
         comparison,
       },
-      isCorrect: guessed.id === target.id,
+      isCorrect,
     });
   } catch (error) {
     console.error('Error validando intento diario:', error);
