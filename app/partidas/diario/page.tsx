@@ -1,12 +1,17 @@
 'use client'
 
 import Image from 'next/image'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Press_Start_2P } from "next/font/google";
 import { searchPokemonByNamePartial } from '@/libs/actions/partida';
 import GuessGrid, { type GuessEntry } from '@/components/GuessGrid';
 
 const pixelFont = Press_Start_2P({ weight: "400", subsets: ["latin"] });
+
+const getTodayStorageKey = () => {
+  const today = new Intl.DateTimeFormat('sv-SE').format(new Date()); // YYYY-MM-DD
+  return `pokedle:diario:${today}`;
+};
 
 const DiarioPage = () => {
   const [inputValue, setInputValue] = useState('');
@@ -21,7 +26,9 @@ const DiarioPage = () => {
   const [isGameWon, setIsGameWon] = useState(false);
   const [showWinAnimation, setShowWinAnimation] = useState(false);
   const [winPokemonName, setWinPokemonName] = useState('');
+  const [isSessionHydrated, setIsSessionHydrated] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const storageKey = useMemo(() => getTodayStorageKey(), []);
 
   // Inicializar partida diaria compartida
   useEffect(() => {
@@ -63,6 +70,60 @@ const DiarioPage = () => {
       cancelled = true;
     };
   }, []);
+
+  // Cargar progreso diario desde almacenamiento local
+  useEffect(() => {
+    if (isDailyLoading || dailyError || isSessionHydrated) {
+      return;
+    }
+
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) {
+        const parsed = JSON.parse(raw) as {
+          guesses?: GuessEntry[];
+          isGameWon?: boolean;
+          winPokemonName?: string;
+        };
+
+        if (Array.isArray(parsed.guesses)) {
+          setGuesses(parsed.guesses);
+        }
+
+        if (typeof parsed.isGameWon === 'boolean') {
+          setIsGameWon(parsed.isGameWon);
+        }
+
+        if (typeof parsed.winPokemonName === 'string') {
+          setWinPokemonName(parsed.winPokemonName);
+        }
+      }
+    } catch (error) {
+      console.error('No se pudo restaurar la sesión diaria:', error);
+    } finally {
+      setIsSessionHydrated(true);
+    }
+  }, [isDailyLoading, dailyError, isSessionHydrated, storageKey]);
+
+  // Persistir progreso diario en almacenamiento local
+  useEffect(() => {
+    if (!isSessionHydrated || isDailyLoading || dailyError) {
+      return;
+    }
+
+    try {
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          guesses,
+          isGameWon,
+          winPokemonName,
+        })
+      );
+    } catch (error) {
+      console.error('No se pudo guardar la sesión diaria:', error);
+    }
+  }, [guesses, isGameWon, winPokemonName, isSessionHydrated, isDailyLoading, dailyError, storageKey]);
 
   // Cerrar sugerencias al hacer clic fuera
   useEffect(() => {
