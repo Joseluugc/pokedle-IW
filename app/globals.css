@@ -48,6 +48,12 @@ body {
   scroll-behavior: smooth !important;
 }
 
+@keyframes cardFlip {
+  0%   { transform: rotateY(90deg) scaleX(0.6); opacity: 0; }
+  50%  { transform: rotateY(-8deg) scaleX(1.02); opacity: 1; }
+  100% { transform: rotateY(0deg)  scaleX(1);    opacity: 1; }
+}
+
 body {
   background-image: url('/background2.jpg');
   background-size: cover;

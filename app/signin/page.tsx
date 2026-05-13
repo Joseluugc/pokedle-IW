@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/libs/supabase/client";
 import { Provider } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
@@ -14,46 +15,85 @@ const font = Inter({ subsets: ["latin"] });
 // Successfull login redirects to /api/auth/callback where the Code Exchange is processed (see app/api/auth/callback/route.js).
 export default function Login() {
   const supabase = createClient();
-  const [email, setEmail] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isDisabled, setIsDisabled] = useState<boolean>(false);
+  const router = useRouter();
 
-  const handleSignup = async (
-    e: any,
-    options: {
-      type: string;
-      provider?: Provider;
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [email, setEmail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleOAuth = async (provider: Provider) => {
+    setIsLoading(true);
+    try {
+      const redirectURL = window.location.origin + "/api/auth/callback";
+      await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: redirectURL },
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Ocurrió un error. Inténtalo de nuevo.");
+    } finally {
+      setIsLoading(false);
     }
-  ) => {
-    e?.preventDefault();
+  };
+
+  const handleSignIn = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!email || !password) return;
 
     setIsLoading(true);
-
     try {
-      const { type, provider } = options;
-      const redirectURL = window.location.origin + "/api/auth/callback";
-
-      if (type === "oauth") {
-        await supabase.auth.signInWithOAuth({
-          provider,
-          options: {
-            redirectTo: redirectURL,
-          },
-        });
-      } else if (type === "magic_link") {
-        await supabase.auth.signInWithOtp({
-          email,
-          options: {
-            emailRedirectTo: redirectURL,
-          },
-        });
-
-        toast.success("Check your emails!");
-
-        setIsDisabled(true);
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("¡Bienvenido de nuevo!");
+        router.push("/dashboard");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      toast.error("Ocurrió un error. Inténtalo de nuevo.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!email || !username || !password || !confirmPassword) return;
+
+    if (password !== confirmPassword) {
+      toast.error("Las contraseñas no coinciden.");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("La contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const redirectURL = window.location.origin + "/api/auth/callback";
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectURL,
+          data: { username },
+        },
+      });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("¡Cuenta creada! Revisa tu correo para confirmarla.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Ocurrió un error. Inténtalo de nuevo.");
     } finally {
       setIsLoading(false);
     }
@@ -78,16 +118,32 @@ export default function Login() {
           Home
         </Link>
       </div>
-      <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-center mb-12">
-        Sign-in to {config.appName}{" "}
+
+      <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-center mb-8">
+        {mode === "signin" ? `Iniciar sesión en` : `Crear cuenta en`} {config.appName}
       </h1>
 
-      <div className="space-y-8 max-w-xl mx-auto">
+      {/* Tabs */}
+      <div className="tabs tabs-boxed max-w-xl mx-auto mb-8 justify-center">
+        <button
+          className={`tab ${mode === "signin" ? "tab-active" : ""}`}
+          onClick={() => setMode("signin")}
+        >
+          Iniciar sesión
+        </button>
+        <button
+          className={`tab ${mode === "signup" ? "tab-active" : ""}`}
+          onClick={() => setMode("signup")}
+        >
+          Registrarse
+        </button>
+      </div>
+
+      <div className="space-y-6 max-w-xl mx-auto">
+        {/* Google OAuth */}
         <button
           className="btn btn-block"
-          onClick={(e) =>
-            handleSignup(e, { type: "oauth", provider: "google" })
-          }
+          onClick={() => handleOAuth("google")}
           disabled={isLoading}
         >
           {isLoading ? (
@@ -116,38 +172,96 @@ export default function Login() {
               />
             </svg>
           )}
-          Sign-up with Google
+          {mode === "signin" ? "Iniciar sesión con Google" : "Registrarse con Google"}
         </button>
 
-        <div className="divider text-xs text-base-content/50 font-medium">
-          OR
-        </div>
+        <div className="divider text-xs text-base-content/50 font-medium">O</div>
 
-        <form
-          className="form-control w-full space-y-4"
-          onSubmit={(e) => handleSignup(e, { type: "magic_link" })}
-        >
-          <input
-            required
-            type="email"
-            value={email}
-            autoComplete="email"
-            placeholder="tom@cruise.com"
-            className="input input-bordered w-full placeholder:opacity-60"
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        {/* Sign In Form */}
+        {mode === "signin" && (
+          <form className="form-control w-full space-y-4" onSubmit={handleSignIn}>
+            <input
+              required
+              type="email"
+              value={email}
+              autoComplete="email"
+              placeholder="correo@ejemplo.com"
+              className="input input-bordered w-full placeholder:opacity-60"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              required
+              type="password"
+              value={password}
+              autoComplete="current-password"
+              placeholder="Contraseña"
+              className="input input-bordered w-full placeholder:opacity-60"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              className="btn btn-primary btn-block"
+              disabled={isLoading}
+              type="submit"
+            >
+              {isLoading && <span className="loading loading-spinner loading-xs"></span>}
+              Iniciar sesión
+            </button>
+          </form>
+        )}
 
-          <button
-            className="btn btn-primary btn-block"
-            disabled={isLoading || isDisabled}
-            type="submit"
-          >
-            {isLoading && (
-              <span className="loading loading-spinner loading-xs"></span>
-            )}
-            Send Magic Link
-          </button>
-        </form>
+        {/* Sign Up Form */}
+        {mode === "signup" && (
+          <form className="form-control w-full space-y-4" onSubmit={handleSignUp}>
+            <input
+              required
+              type="text"
+              value={username}
+              autoComplete="username"
+              placeholder="Nombre de usuario"
+              minLength={3}
+              maxLength={30}
+              className="input input-bordered w-full placeholder:opacity-60"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              required
+              type="email"
+              value={email}
+              autoComplete="email"
+              placeholder="correo@ejemplo.com"
+              className="input input-bordered w-full placeholder:opacity-60"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              required
+              type="password"
+              value={password}
+              autoComplete="new-password"
+              placeholder="Contraseña (mín. 6 caracteres)"
+              minLength={6}
+              className="input input-bordered w-full placeholder:opacity-60"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <input
+              required
+              type="password"
+              value={confirmPassword}
+              autoComplete="new-password"
+              placeholder="Repetir contraseña"
+              minLength={6}
+              className="input input-bordered w-full placeholder:opacity-60"
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <button
+              className="btn btn-primary btn-block"
+              disabled={isLoading}
+              type="submit"
+            >
+              {isLoading && <span className="loading loading-spinner loading-xs"></span>}
+              Crear cuenta
+            </button>
+          </form>
+        )}
       </div>
     </main>
   );

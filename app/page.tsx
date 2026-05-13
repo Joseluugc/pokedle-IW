@@ -7,7 +7,10 @@ import { Press_Start_2P } from "next/font/google";
 
 const pixelFont = Press_Start_2P({ weight: "400", subsets: ["latin"] });
 
-export default function Page() {
+export default async function Page() {
+
+
+
   return (
     <>
       {/* <header className="p-4 flex justify-end max-w-7xl mx-auto">

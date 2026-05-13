@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function DailyModeButton() {
   return (
-    <Link href="/dashboard" className="group">
+    <Link href="/partidas/diario" className="group">
       <div
         className="relative w-[480px] h-[120px] rounded-2xl overflow-hidden border-[3px] border-yellow-500/80 shadow-[0_4px_20px_rgba(0,0,0,0.35)] cursor-pointer transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_6px_28px_rgba(234,179,8,0.4)] active:scale-[0.98]"
       >

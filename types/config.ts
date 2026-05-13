@@ -62,3 +62,65 @@ export interface ConfigProps {
     callbackUrl: string;
   };
 }
+
+
+
+
+// ============================================
+// TIPOS
+// ============================================
+
+export type GameMode = 'daily' | 'infinite';
+
+export type GameStatus = 'active' | 'won' | 'lost';
+
+export interface PokemonStats {
+  hp: number;
+  attack: number;
+  defense: number;
+  'special-attack': number;
+  'special-defense': number;
+  speed: number;
+}
+
+export interface PokemonData {
+  id: number;
+  nombre: string;
+  tipos: string[];
+  peso: number;
+  altura: number;
+  habilidades: string[];
+  estadisticas: PokemonStats;
+  color: string;
+  generacion: string;
+  habitat: string | null;
+  imagen_url: string;
+}
+
+export interface TargetPokemon {
+  id: number;
+  nombre: string;
+  tipos: string[];
+  peso: number;
+  altura: number;
+  habilidades: string[];
+  estadisticas: PokemonStats;
+  color: string;
+  generacion: string;
+  habitat: string | null;
+  imagen: string;
+}
+
+export interface GameStats {
+  startTime: number;
+  endTime: number | null;
+  totalTime: number | null;
+}
+
+export interface GameState {
+  id: string;
+  createdAt: string;
+  targetPokemon: TargetPokemon;
+  status: 'active' | 'won' | 'lost';
+  stats: GameStats;
+}

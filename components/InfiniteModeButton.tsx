@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function InfiniteModeButton() {
   return (
-    <Link href="/dashboard" className="group">
+    <Link href="/partidas/infinito" className="group">
       <div
         className="relative w-[480px] h-[120px] rounded-2xl overflow-hidden border-[3px] border-pink-400/80 shadow-[0_4px_20px_rgba(0,0,0,0.35)] cursor-pointer transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_6px_28px_rgba(236,72,153,0.35)] active:scale-[0.98]"
       >
