@@ -71,41 +71,109 @@ const DiarioPage = () => {
     };
   }, []);
 
-  // Cargar progreso diario desde almacenamiento local
+  // Cargar progreso diario (localStorage -> DB -> inicializar vacío)
   useEffect(() => {
     if (isDailyLoading || dailyError || isSessionHydrated) {
       return;
     }
 
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (raw) {
-        const parsed = JSON.parse(raw) as {
-          guesses?: GuessEntry[];
-          isGameWon?: boolean;
-          winPokemonName?: string;
-        };
+    let cancelled = false;
 
-        if (Array.isArray(parsed.guesses)) {
-          setGuesses(parsed.guesses);
+    const hydrateProgress = async () => {
+      const applyProgress = (progress: {
+        guesses: GuessEntry[];
+        isGameWon: boolean;
+        winPokemonName: string;
+      }) => {
+        if (cancelled) {
+          return;
         }
 
-        if (typeof parsed.isGameWon === 'boolean') {
-          setIsGameWon(parsed.isGameWon);
+        setGuesses(progress.guesses);
+        setIsGameWon(progress.isGameWon);
+        setWinPokemonName(progress.winPokemonName);
+      };
+
+      const emptyProgress = {
+        guesses: [] as GuessEntry[],
+        isGameWon: false,
+        winPokemonName: '',
+      };
+
+      try {
+        const raw = localStorage.getItem(storageKey);
+        if (raw) {
+          const parsed = JSON.parse(raw) as {
+            guesses?: GuessEntry[];
+            isGameWon?: boolean;
+            winPokemonName?: string;
+          };
+
+          applyProgress({
+            guesses: Array.isArray(parsed.guesses) ? parsed.guesses : [],
+            isGameWon: typeof parsed.isGameWon === 'boolean' ? parsed.isGameWon : false,
+            winPokemonName: typeof parsed.winPokemonName === 'string' ? parsed.winPokemonName : '',
+          });
+          return;
         }
 
-        if (typeof parsed.winPokemonName === 'string') {
-          setWinPokemonName(parsed.winPokemonName);
+        const response = await fetch('/api/partidas/diario/progress', {
+          method: 'GET',
+          cache: 'no-store',
+        });
+
+        if (response.ok) {
+          const payload = await response.json();
+
+          if (payload?.ok) {
+            const remoteProgress = {
+              guesses: Array.isArray(payload.guesses) ? (payload.guesses as GuessEntry[]) : [],
+              isGameWon: typeof payload.isGameWon === 'boolean' ? payload.isGameWon : false,
+              winPokemonName: typeof payload.winPokemonName === 'string' ? payload.winPokemonName : '',
+            };
+
+            const hasRemoteProgress =
+              remoteProgress.guesses.length > 0 ||
+              remoteProgress.isGameWon ||
+              remoteProgress.winPokemonName.length > 0;
+
+            if (hasRemoteProgress) {
+              applyProgress(remoteProgress);
+              localStorage.setItem(storageKey, JSON.stringify(remoteProgress));
+              return;
+            }
+          }
+        }
+
+        applyProgress(emptyProgress);
+        localStorage.setItem(storageKey, JSON.stringify(emptyProgress));
+
+        await fetch('/api/partidas/diario/progress', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(emptyProgress),
+        }).catch((error) => {
+          console.error('No se pudo inicializar progreso diario en DB:', error);
+        });
+      } catch (error) {
+        console.error('No se pudo restaurar la sesión diaria:', error);
+      } finally {
+        if (!cancelled) {
+          setIsSessionHydrated(true);
         }
       }
-    } catch (error) {
-      console.error('No se pudo restaurar la sesión diaria:', error);
-    } finally {
-      setIsSessionHydrated(true);
-    }
+    };
+
+    void hydrateProgress();
+
+    return () => {
+      cancelled = true;
+    };
   }, [isDailyLoading, dailyError, isSessionHydrated, storageKey]);
 
-  // Persistir progreso diario en almacenamiento local
+  // Persistir progreso diario en localStorage y DB
   useEffect(() => {
     if (!isSessionHydrated || isDailyLoading || dailyError) {
       return;
@@ -120,6 +188,22 @@ const DiarioPage = () => {
           winPokemonName,
         })
       );
+
+      const payload = {
+        guesses,
+        isGameWon,
+        winPokemonName,
+      };
+
+      void fetch('/api/partidas/diario/progress', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }).catch((error) => {
+        console.error('No se pudo sincronizar la sesión diaria en DB:', error);
+      });
     } catch (error) {
       console.error('No se pudo guardar la sesión diaria:', error);
     }
