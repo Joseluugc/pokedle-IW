@@ -4,6 +4,7 @@ import InfiniteModeButton from "@/components/InfiniteModeButton";
 import AccountButton from "@/components/AccountButton";
 import RankingButton from "@/components/RankingButton";
 import { Press_Start_2P } from "next/font/google";
+import Footer from "@/components/Footer";
 
 const pixelFont = Press_Start_2P({ weight: "400", subsets: ["latin"] });
 
@@ -11,7 +12,7 @@ export default async function Page() {
   return (
     <>
       <main>
-        <section className="flex flex-col items-center justify-center text-center gap-12 px-8 py-12">
+        <section className="flex flex-col items-center justify-center text-center gap-12 px-8 py-12 pb-24">
           <div className="flex items-center gap-6">
             <AccountButton />
             <Image src="/logo.webp" alt="Pokedle" width={500} height={500} priority />
@@ -24,6 +25,8 @@ export default async function Page() {
           <InfiniteModeButton />
         </section>
       </main>
+      <Footer />
     </>
+    
   );
 }
