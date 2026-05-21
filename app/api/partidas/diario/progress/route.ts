@@ -66,3 +66,69 @@ export async function GET() {
     );
   }
 }
+
+export async function PUT(request: Request) {
+  try {
+    const authClient = await createClient();
+    const {
+      data: { user },
+      error: userError,
+    } = await authClient.auth.getUser();
+
+    if (userError) {
+      throw new Error(`Error obteniendo usuario autenticado: ${userError.message}`);
+    }
+
+    if (!user) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: 'No autenticado',
+        },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json().catch((): null => null);
+
+    const guesses = Array.isArray(body?.guesses) ? body.guesses : [];
+    const isGameWon = typeof body?.isGameWon === 'boolean' ? body.isGameWon : false;
+    const winPokemonName =
+      typeof body?.winPokemonName === 'string' && body.winPokemonName.trim().length > 0
+        ? body.winPokemonName.trim()
+        : null;
+
+    const day = getTodayKey();
+    const supabase = createServiceClient();
+
+    const { error } = await supabase
+      .from('partidas_diarias')
+      .upsert(
+        {
+          user_id: user.id,
+          day,
+          guesses,
+          is_game_won: isGameWon,
+          win_pokemon_name: winPokemonName,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id,day' }
+      );
+
+    if (error) {
+      throw new Error(`Error guardando progreso diario: ${error.message}`);
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error('Error guardando progreso diario:', error);
+
+    return NextResponse.json(
+      {
+        ok: false,
+        error: 'No se pudo guardar el progreso diario',
+      },
+      { status: 500 }
+    );
+  }
+}
