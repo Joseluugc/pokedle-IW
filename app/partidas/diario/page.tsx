@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { Press_Start_2P } from "next/font/google";
 import { searchPokemonByNamePartial } from '@/libs/actions/partida';
@@ -315,7 +316,9 @@ const DiarioPage = () => {
   return (
     <main>
       <section className="flex flex-col items-center justify-center text-center gap-12 px-8 py-12">
-        <Image src="/logo.webp" alt="Pokedle" width={500} height={500} priority />
+        <Link href="/" className="transition-opacity hover:opacity-80 active:opacity-60">
+          <Image src="/logo.webp" alt="Pokedle – Volver al inicio" width={500} height={500} priority />
+        </Link>
 
         <p className={`${pixelFont.className} text-base bg-gradient-to-r from-yellow-200 via-amber-400 to-orange-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] tracking-wide leading-relaxed`}>
           ¡¿Cuál es este pokémon?!
@@ -454,12 +457,12 @@ const DiarioPage = () => {
               Tu racha ha sido<br />actualizada ✓
             </p>
 
-            <button
-              onClick={() => setShowWinAnimation(false)}
-              className="mt-1 px-6 py-3 bg-amber-400 hover:bg-amber-300 active:scale-95 text-amber-900 rounded-lg border-2 border-amber-600 shadow-[0_4px_0_#b45309] hover:shadow-[0_2px_0_#b45309] hover:translate-y-0.5 transition-all duration-150"
+            <Link
+              href="/"
+              className="mt-1 px-6 py-3 bg-amber-400 hover:bg-amber-300 active:scale-95 text-amber-900 rounded-lg border-2 border-amber-600 shadow-[0_4px_0_#b45309] hover:shadow-[0_2px_0_#b45309] hover:translate-y-0.5 transition-all duration-150 inline-block"
             >
               <span className={`${pixelFont.className} text-xs`}>¡Genial!</span>
-            </button>
+            </Link>
           </div>
 
           <style>{`
