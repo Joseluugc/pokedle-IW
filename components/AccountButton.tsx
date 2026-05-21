@@ -85,7 +85,7 @@ const AccountButton = () => {
             leaveFrom="transform scale-100 opacity-100"
             leaveTo="transform scale-95 opacity-0"
           >
-            <Popover.Panel className="absolute left-0 z-20 mt-2 w-44">
+            <Popover.Panel className="absolute right-0 z-20 mt-2 w-62">
               <div className="rounded-xl border border-yellow-500/30 bg-gray-900/95 backdrop-blur-sm shadow-xl p-1 space-y-0.5">
                 <Link
                   href="/dashboard"
