@@ -109,12 +109,23 @@ const DiarioPage = () => {
             winPokemonName?: string;
           };
 
-          applyProgress({
+          const localProgress = {
             guesses: Array.isArray(parsed.guesses) ? parsed.guesses : [],
             isGameWon: typeof parsed.isGameWon === 'boolean' ? parsed.isGameWon : false,
             winPokemonName: typeof parsed.winPokemonName === 'string' ? parsed.winPokemonName : '',
-          });
-          return;
+          };
+
+          const hasLocalProgress =
+            localProgress.guesses.length > 0 ||
+            localProgress.isGameWon ||
+            localProgress.winPokemonName.length > 0;
+
+          // Si hay progreso real en local, usamos caché y evitamos consulta.
+          // Si está vacío, consultamos DB para soportar multi-dispositivo.
+          if (hasLocalProgress) {
+            applyProgress(localProgress);
+            return;
+          }
         }
 
         const response = await fetch('/api/partidas/diario/progress', {
