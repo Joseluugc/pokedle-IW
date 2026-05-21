@@ -88,13 +88,13 @@ const AccountButton = () => {
             <Popover.Panel className="absolute right-0 z-20 mt-2 w-62">
               <div className="rounded-xl border border-yellow-500/30 bg-gray-900/95 backdrop-blur-sm shadow-xl p-1 space-y-0.5">
                 <Link
-                  href="/dashboard"
+                  href="/settings"
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-yellow-200 hover:bg-yellow-500/10 transition-colors duration-150 w-full"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                    <path fillRule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clipRule="evenodd" />
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
                   </svg>
-                  Dashboard
+                  Settings
                 </Link>
                 <button
                   onClick={handleSignOut}
