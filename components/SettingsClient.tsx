@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
@@ -305,7 +305,7 @@ const SettingsClient = ({
 type KpiCardProps = {
   label: string;
   value: number;
-  icon: React.ReactNode;
+  icon: ReactNode;
   accent: string;
 };
 
@@ -323,7 +323,7 @@ type SettingsCardProps = {
   title: string;
   description: string;
   accent?: "default" | "danger";
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 const SettingsCard = ({ title, description, accent = "default", children }: SettingsCardProps) => {
@@ -361,7 +361,7 @@ type PasswordInputProps = {
   id: string;
   label: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange: (newValue: string) => void; // eslint-disable-line no-unused-vars
   autoComplete: string;
 };
 
