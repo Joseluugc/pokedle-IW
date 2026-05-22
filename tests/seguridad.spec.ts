@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 
-const BASE = 'https://pokedle.app';
+const BASE = 'https://pokedle-iw.vercel.app';
 
 test.describe('Pruebas de Seguridad', () => {
 
@@ -9,10 +9,8 @@ test.describe('Pruebas de Seguridad', () => {
     const res = await page.goto(`${BASE}/dashboard`);
     await page.waitForLoadState('networkidle');
     
-    // Si no redirige a signin, al menos capturamos la pantalla como evidencia de seguridad (o falta de ella)
     await page.screenshot({ path: 'evidencias_p4/seguridad_redireccion_dashboard.png', fullPage: true });
     
-    // Anotar resultado en log
     const log = `=== PRUEBA DE SEGURIDAD: /dashboard ===\nURL Final: ${page.url()}\nStatus: ${res?.status()}`;
     fs.writeFileSync('evidencias_p4/seguridad_dashboard_log.txt', log, 'utf-8');
   });
@@ -28,7 +26,6 @@ test.describe('Pruebas de Seguridad', () => {
   });
 
   test('PS-03: Endpoint cron rechaza sin token', async ({ request }) => {
-    // Si da 404 es porque la ruta cambió, anotamos el status que devuelva
     const response = await request.get(`${BASE}/api/cron/update-pokemon`);
     const status = response.status();
     const bodyText = await response.text();

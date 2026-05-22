@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const BASE = 'https://pokedle.app';
+const BASE = 'https://pokedle-iw.vercel.app';
 
 test.describe('Pruebas de Funcionalidad', () => {
 
@@ -8,17 +8,14 @@ test.describe('Pruebas de Funcionalidad', () => {
     await page.goto(`${BASE}/signin`);
     await page.waitForLoadState('networkidle');
 
-    // Screenshot inicial del formulario
     await page.screenshot({ path: 'evidencias_p4/funcionalidad_error_inicial.png', fullPage: true });
 
-    // Intentar rellenar un input para generar estado
     const input = page.locator('input').first();
     if (await input.isVisible()) {
       await input.fill('test@test.com');
       await input.press('Enter');
     }
     
-    // Captura con "error" forzado (screenshot del intento fallido)
     await page.screenshot({ path: 'evidencias_p4/funcionalidad_error.png', fullPage: true });
   });
 
@@ -27,5 +24,27 @@ test.describe('Pruebas de Funcionalidad', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     await page.screenshot({ path: 'evidencias_p4/funcionalidad_exito.png', fullPage: true });
+  });
+
+  test('PF-03: Jugar Modo Diario - Autocompletado', async ({ page }) => {
+    await page.goto(`${BASE}/partidas/diario`);
+    await page.waitForLoadState('networkidle');
+
+    const input = page.locator('input[placeholder="Nombre del pokemon"]');
+    if (await input.isVisible()) {
+      await input.fill('pika');
+      
+      // Esperar a que la petición debounce se complete y salgan las sugerencias
+      await page.waitForTimeout(1500);
+      await page.screenshot({ path: 'evidencias_p4/funcionalidad_diario_autocomplete.png', fullPage: true });
+
+      // Seleccionar la sugerencia
+      const suggestion = page.locator('ul li').first();
+      if (await suggestion.isVisible()) {
+        await suggestion.click();
+        await page.waitForTimeout(500);
+        await page.screenshot({ path: 'evidencias_p4/funcionalidad_diario_seleccion.png', fullPage: true });
+      }
+    }
   });
 });

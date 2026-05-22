@@ -8,8 +8,9 @@ A continuación se detalla el conjunto de pruebas realizadas sobre el sistema pa
 ## 1. Pruebas de Funcionalidad
 Se validó mediante scripts de Playwright el flujo principal de usuario, comprobando el comportamiento esperado tanto en rutas de éxito como en validaciones de error.
 
-- **Evidencia de éxito (`evidencias_p4/funcionalidad_exito.png`)**: Captura que demuestra que el usuario puede cargar correctamente la aplicación y acceder al modo de juego principal. Se verifican elementos esenciales como el input de texto de adivinar Pokémon.
+- **Evidencia de éxito (`evidencias_p4/funcionalidad_exito.png`)**: Captura que demuestra que el usuario puede cargar correctamente la aplicación y acceder al menú principal.
 - **Evidencia de error de validación (`evidencias_p4/funcionalidad_error.png`)**: Demuestra el control de errores en los formularios de autenticación al proveer credenciales incompletas o no válidas.
+- **Evidencia de Juego Modo Diario (`evidencias_p4/funcionalidad_diario_autocomplete.png` y `_seleccion.png`)**: Demuestra la interacción del usuario con la partida diaria, verificando el sistema de autocompletado asíncrono que busca Pokémon en la base de datos y la correcta inserción en el input tras seleccionarlo.
 
 ## 2. Pruebas de Base de Datos
 Se ejecutaron pruebas teóricas sobre la configuración y restricciones (constraints) de la base de datos Supabase, documentando los resultados que arroja el gestor PostgreSQL ante intentos de violación de integridad.

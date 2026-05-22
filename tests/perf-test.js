@@ -2,8 +2,8 @@ const fs = require('fs');
 const https = require('https');
 
 async function testPerformance() {
-  console.log('Iniciando prueba de rendimiento sobre https://pokedle.app...');
-  const url = 'https://pokedle.app';
+  console.log('Iniciando prueba de rendimiento sobre https://pokedle-iw.vercel.app...');
+  const url = 'https://pokedle-iw.vercel.app';
   const requests = 10;
   const times = [];
 

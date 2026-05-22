@@ -1,6 +1,6 @@
 import { test } from '@playwright/test';
 
-const BASE = 'https://pokedle.vercel.app';
+const BASE = 'https://pokedle-iw.vercel.app';
 
 test.describe('Pruebas de Compatibilidad Multiplataforma', () => {
 
@@ -29,7 +29,7 @@ test.describe('Pruebas de Compatibilidad Multiplataforma', () => {
   });
 
   test('PC-03: Firefox Tablet', async ({ browser }) => {
-    const context = await browser.newContext({ viewport: { width: 768, height: 1024 }, isMobile: true, hasTouch: true });
+    const context = await browser.newContext({ viewport: { width: 768, height: 1024 } });
     const page = await context.newPage();
     await page.goto(BASE);
     await page.waitForLoadState('networkidle');
