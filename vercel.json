@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/daily-pokemon",
+      "schedule": "0 23 * * *"
+    }
+  ]
+}
