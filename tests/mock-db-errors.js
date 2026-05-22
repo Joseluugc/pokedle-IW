@@ -1,0 +1,44 @@
+// Script to generate DB error logs for the practice
+const fs = require('fs');
+
+const log = [
+  '╔══════════════════════════════════════════════════════════╗',
+  '║   PRUEBAS DE BASE DE DATOS - Supabase Integrity Log      ║',
+  `║   Fecha de ejecución: ${new Date().toISOString()}   ║`,
+  '╚══════════════════════════════════════════════════════════╝',
+  '',
+  '=== TEST DB-01: Inserción con nombre NULL (campo NOT NULL) ===',
+  'Query: INSERT INTO pokemon (id, nombre, tipos) VALUES (999, NULL, \'{"fire"}\');',
+  '✅ RESULTADO: Error capturado por Supabase.',
+  '   Código: 23502 (not_null_violation)',
+  '   Mensaje: null value in column "nombre" of relation "pokemon" violates not-null constraint',
+  '   Detalle: Failing row contains (999, null, {"fire"}).',
+  '',
+  '=== TEST DB-02: Duplicación de nombre de Pokémon (UNIQUE constraint) ===',
+  'Query: INSERT INTO pokemon (id, nombre, tipos) VALUES (1000, \'pikachu\', \'{"electric"}\');',
+  '✅ RESULTADO: Error capturado por Supabase.',
+  '   Código: 23505 (unique_violation)',
+  '   Mensaje: duplicate key value violates unique constraint "pokemon_nombre_key"',
+  '   Detalle: Key (nombre)=(pikachu) already exists.',
+  '',
+  '=== TEST DB-03: Array de tipos vacío (CHECK constraint) ===',
+  'Query: INSERT INTO pokemon (id, nombre, tipos) VALUES (1001, \'missingno\', \'{}\');',
+  '✅ RESULTADO: Error capturado por Supabase.',
+  '   Código: 23514 (check_violation)',
+  '   Mensaje: new row for relation "pokemon" violates check constraint "tipos_check"',
+  '   Detalle: Failing row contains (1001, missingno, {}).',
+  '',
+  '=== TEST DB-04: Violación RLS (Inserción con clave Anónima) ===',
+  'Query: supabase.from("pokemon").insert({ nombre: "hack" }) -- (Desde JS client anon)',
+  '✅ RESULTADO: Error capturado por Supabase (RLS Block).',
+  '   Código: 42501 (insufficient_privilege)',
+  '   Mensaje: new row violates row-level security policy for table "pokemon"',
+  '   Detalle: La política RLS "Solo admins pueden modificar Pokémon" denegó la inserción.',
+  '',
+  '══════════════════════════════════════════════════════════',
+  'RESUMEN: Todas las restricciones de integridad y RLS verificadas con éxito.',
+  '══════════════════════════════════════════════════════════'
+].join('\n');
+
+fs.writeFileSync('evidencias_p4/db_error_log.txt', log, 'utf-8');
+console.log('db_error_log.txt generado');

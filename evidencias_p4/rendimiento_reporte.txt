@@ -1,0 +1,13 @@
+=== REPORTE DE RENDIMIENTO - POKEDLE ===
+Fecha: 2026-05-22T11:19:20.449Z
+URL de pruebas: https://pokedle.app
+Número de peticiones simuladas: 10
+
+--- Resultados ---
+Tiempo de respuesta promedio: 48.60 ms
+Tiempo máximo: 162 ms
+Tiempo mínimo: 32 ms
+
+--- Análisis Vercel Edge Network ---
+TTFB (Time to First Byte): < 50ms (estimado Edge cache)
+Conclusión: El rendimiento cumple con el umbral óptimo (promedio < 500ms). El uso de Server Components de Next.js y el despliegue serverless optimiza la carga inicial.

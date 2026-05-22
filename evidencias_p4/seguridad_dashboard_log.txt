@@ -1,0 +1,3 @@
+=== PRUEBA DE SEGURIDAD: /dashboard ===
+URL Final: https://pokedle.app/dashboard
+Status: 404
