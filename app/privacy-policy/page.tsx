@@ -2,29 +2,6 @@ import Link from "next/link";
 import { getSEOTags } from "@/libs/seo";
 import config from "@/config";
 
-// CHATGPT PROMPT TO GENERATE YOUR PRIVACY POLICY — replace with your own data 👇
-
-// 1. Go to https://chat.openai.com/
-// 2. Copy paste bellow
-// 3. Replace the data with your own (if needed)
-// 4. Paste the answer from ChatGPT directly in the <pre> tag below
-
-// You are an excellent lawyer.
-
-// I need your help to write a simple privacy policy for my website. Here is some context:
-// - Website: https://shipfa.st
-// - Name: ShipFast
-// - Description: A JavaScript code boilerplate to help entrepreneurs launch their startups faster
-// - User data collected: name, email and payment information
-// - Non-personal data collection: web cookies
-// - Purpose of Data Collection: Order processing
-// - Data sharing: we do not share the data with any other parties
-// - Children's Privacy: we do not collect any data from children
-// - Updates to the Privacy Policy: users will be updated by email
-// - Contact information: marc@shipfa.st
-
-// Please write a simple privacy policy for my site. Add the current date.  Do not add or explain your reasoning. Answer:
-
 export const metadata = getSEOTags({
   title: `Privacy Policy | ${config.appName}`,
   canonicalUrlRelative: "/privacy-policy",
@@ -32,78 +9,141 @@ export const metadata = getSEOTags({
 
 const PrivacyPolicy = () => {
   return (
-    <main className="max-w-xl mx-auto">
-      <div className="p-5">
-        <Link href="/" className="btn btn-ghost">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="w-5 h-5"
-          >
-            <path
-              fillRule="evenodd"
-              d="M15 10a.75.75 0 01-.75.75H7.612l2.158 1.96a.75.75 0 11-1.04 1.08l-3.5-3.25a.75.75 0 010-1.08l3.5-3.25a.75.75 0 111.04 1.08L7.612 9.25h6.638A.75.75 0 0115 10z"
-              clipRule="evenodd"
-            />
-          </svg>{" "}
-          Back
-        </Link>
-        <h1 className="text-3xl font-extrabold pb-6">
-          Privacy Policy for {config.appName}
-        </h1>
-
-        <pre
-          className="leading-relaxed whitespace-pre-wrap"
-          style={{ fontFamily: "sans-serif" }}
+    <main className="max-w-3xl mx-auto px-4 py-10">
+      <Link href="/" className="btn btn-ghost mb-6 inline-flex">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          className="w-5 h-5"
         >
-          {`Last Updated: 2023-08-25
+          <path
+            fillRule="evenodd"
+            d="M15 10a.75.75 0 01-.75.75H7.612l2.158 1.96a.75.75 0 11-1.04 1.08l-3.5-3.25a.75.75 0 010-1.08l3.5-3.25a.75.75 0 111.04 1.08L7.612 9.25h6.638A.75.75 0 0115 10z"
+            clipRule="evenodd"
+          />
+        </svg>{" "}
+        Back
+      </Link>
 
-Thank you for visiting ShipFast ("we," "us," or "our"). This Privacy Policy outlines how we collect, use, and protect your personal and non-personal information when you use our website located at https://shipfa.st (the "Website").
+      <article className="bg-base-100 rounded-2xl shadow-lg px-8 py-10 md:px-12">
+        <header className="mb-8 pb-6 border-b border-base-200">
+          <h1 className="text-3xl font-extrabold mb-2">
+            Privacy Policy for {config.appName}
+          </h1>
+          <p className="text-sm text-base-content/50">
+            <strong>Effective Date:</strong> May 23, 2026
+          </p>
+        </header>
 
-By accessing or using the Website, you agree to the terms of this Privacy Policy. If you do not agree with the practices described in this policy, please do not use the Website.
+        <p className="mb-8 leading-relaxed text-base-content/80">
+          Welcome to Pokedle (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). Your privacy is
+          important to us. This Privacy Policy explains how we collect, use, and
+          protect your information when you use our website,{" "}
+          <a
+            href="https://pokedle-iw.vercel.app"
+            className="link link-primary"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Pokedle
+          </a>
+          .
+        </p>
 
-1. Information We Collect
+        <section className="mb-8">
+          <h2 className="text-xl font-bold mb-3">Information We Collect</h2>
+          <p className="mb-3 leading-relaxed text-base-content/80">
+            We may collect the following personal information:
+          </p>
+          <ul className="list-disc list-inside space-y-1 mb-3 pl-2 text-base-content/80">
+            <li>Name</li>
+            <li>Email address</li>
+          </ul>
+          <p className="leading-relaxed text-base-content/80">
+            We may also collect non-personal information through cookies and
+            similar technologies.
+          </p>
+        </section>
 
-1.1 Personal Data
+        <div className="divider" />
 
-We collect the following personal information from you:
+        <section className="mb-8">
+          <h2 className="text-xl font-bold mb-3">How We Use Your Information</h2>
+          <p className="mb-3 leading-relaxed text-base-content/80">
+            We use the information we collect to:
+          </p>
+          <ul className="list-disc list-inside space-y-1 pl-2 text-base-content/80">
+            <li>Create and manage internal user profiles</li>
+            <li>Improve the user experience on our website</li>
+            <li>Maintain and operate the website</li>
+          </ul>
+        </section>
 
-Name: We collect your name to personalize your experience and communicate with you effectively.
-Email: We collect your email address to send you important information regarding your orders, updates, and communication.
-Payment Information: We collect payment details to process your orders securely. However, we do not store your payment information on our servers. Payments are processed by trusted third-party payment processors.
+        <div className="divider" />
 
-1.2 Non-Personal Data
+        <section className="mb-8">
+          <h2 className="text-xl font-bold mb-3">Cookies</h2>
+          <p className="leading-relaxed text-base-content/80">
+            Pokedle uses cookies to enhance your browsing experience and collect
+            non-personal usage data. You can disable cookies through your
+            browser settings if you prefer.
+          </p>
+        </section>
 
-We may use web cookies and similar technologies to collect non-personal information such as your IP address, browser type, device information, and browsing patterns. This information helps us to enhance your browsing experience, analyze trends, and improve our services.
+        <div className="divider" />
 
-2. Purpose of Data Collection
+        <section className="mb-8">
+          <h2 className="text-xl font-bold mb-3">Data Sharing</h2>
+          <p className="leading-relaxed text-base-content/80">
+            We do not sell, trade, or share your personal information with third
+            parties.
+          </p>
+        </section>
 
-We collect and use your personal data for the sole purpose of order processing. This includes processing your orders, sending order confirmations, providing customer support, and keeping you updated about the status of your orders.
+        <div className="divider" />
 
-3. Data Sharing
+        <section className="mb-8">
+          <h2 className="text-xl font-bold mb-3">Children&apos;s Privacy</h2>
+          <p className="leading-relaxed text-base-content/80">
+            Pokedle does not knowingly collect personal information from
+            children.
+          </p>
+        </section>
 
-We do not share your personal data with any third parties except as required for order processing (e.g., sharing your information with payment processors). We do not sell, trade, or rent your personal information to others.
+        <div className="divider" />
 
-4. Children's Privacy
+        <section className="mb-8">
+          <h2 className="text-xl font-bold mb-3">
+            Updates to This Privacy Policy
+          </h2>
+          <p className="leading-relaxed text-base-content/80">
+            We may update this Privacy Policy from time to time. If we make
+            significant changes, we will notify users by email.
+          </p>
+        </section>
 
-ShipFast is not intended for children under the age of 13. We do not knowingly collect personal information from children. If you are a parent or guardian and believe that your child has provided us with personal information, please contact us at the email address provided below.
+        <div className="divider" />
 
-5. Updates to the Privacy Policy
-
-We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. Any updates will be posted on this page, and we may notify you via email about significant changes.
-
-6. Contact Information
-
-If you have any questions, concerns, or requests related to this Privacy Policy, you can contact us at:
-
-Email: marc@shipfa.st
-
-For all other inquiries, please visit our Contact Us page on the Website.
-
-By using ShipFast, you consent to the terms of this Privacy Policy.`}
-        </pre>
-      </div>
+        <section>
+          <h2 className="text-xl font-bold mb-3">Contact Us</h2>
+          <p className="mb-3 leading-relaxed text-base-content/80">
+            If you have any questions about this Privacy Policy, you can contact
+            us at:
+          </p>
+          <ul className="list-disc list-inside pl-2 text-base-content/80">
+            <li>
+              Email:{" "}
+              <a
+                href="mailto:espejoramirezhugo@gmail.com"
+                className="link link-primary"
+              >
+                espejoramirezhugo@gmail.com
+              </a>
+            </li>
+          </ul>
+        </section>
+      </article>
     </main>
   );
 };
