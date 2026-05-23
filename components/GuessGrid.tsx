@@ -105,7 +105,7 @@ function Arrow({ status }: { status: NumericStatus }) {
   // "lower"  significa que el objetivo es más bajo  → el intento es alto → flecha abajo
   return (
     <span
-      className="block text-white text-[11px] leading-none mt-0.5"
+      className="block text-white text-[6px] leading-none mt-1.5"
       style={PIXEL_TEXT_SHADOW}
     >
       {status === 'higher' ? '▲' : '▼'}
