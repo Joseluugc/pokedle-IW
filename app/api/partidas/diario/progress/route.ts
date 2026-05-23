@@ -20,10 +20,6 @@ export async function GET() {
       error: userError,
     } = await authClient.auth.getUser();
 
-    if (userError) {
-      throw new Error(`Error obteniendo usuario autenticado: ${userError.message}`);
-    }
-
     if (!user) {
       return NextResponse.json(
         {
@@ -32,6 +28,10 @@ export async function GET() {
         },
         { status: 401 }
       );
+    }
+
+    if (userError) {
+      throw new Error(`Error obteniendo usuario autenticado: ${userError.message}`);
     }
 
     const day = getTodayKey();
@@ -75,10 +75,6 @@ export async function PUT(request: Request) {
       error: userError,
     } = await authClient.auth.getUser();
 
-    if (userError) {
-      throw new Error(`Error obteniendo usuario autenticado: ${userError.message}`);
-    }
-
     if (!user) {
       return NextResponse.json(
         {
@@ -87,6 +83,10 @@ export async function PUT(request: Request) {
         },
         { status: 401 }
       );
+    }
+
+    if (userError) {
+      throw new Error(`Error obteniendo usuario autenticado: ${userError.message}`);
     }
 
     const body = await request.json().catch((): null => null);
@@ -101,22 +101,26 @@ export async function PUT(request: Request) {
     const day = getTodayKey();
     const supabase = createServiceClient();
 
-    const { error } = await supabase
-      .from('partidas_diarias')
-      .upsert(
-        {
-          user_id: user.id,
-          day,
-          guesses,
-          is_game_won: isGameWon,
-          win_pokemon_name: winPokemonName,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'user_id,day' }
-      );
+    const now = new Date().toISOString();
 
-    if (error) {
-      throw new Error(`Error guardando progreso diario: ${error.message}`);
+    const { data: updated, error: updateError } = await supabase
+      .from('partidas_diarias')
+      .update({ guesses, is_game_won: isGameWon, win_pokemon_name: winPokemonName, updated_at: now, day })
+      .eq('user_id', user.id)
+      .select('user_id');
+
+    if (updateError) {
+      throw new Error(`Error actualizando progreso diario: ${updateError.message}`);
+    }
+
+    if (!updated || updated.length === 0) {
+      const { error: insertError } = await supabase
+        .from('partidas_diarias')
+        .insert({ user_id: user.id, day, guesses, is_game_won: isGameWon, win_pokemon_name: winPokemonName, updated_at: now });
+
+      if (insertError) {
+        throw new Error(`Error insertando progreso diario: ${insertError.message}`);
+      }
     }
 
     return NextResponse.json({ ok: true });

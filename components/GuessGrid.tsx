@@ -76,15 +76,26 @@ function formatGen(gen: string): string {
   return `Gen ${part}`
 }
 
-// ─── Colores de celda ─────────────────────────────────────────────────────────
+// ─── Colores de celda (paleta retro NES/GBC) ─────────────────────────────────
 
 const cellBg: Record<CellStatus | NumericStatus, string> = {
-  correct: 'bg-emerald-400 border-emerald-500',
-  partial: 'bg-yellow-300 border-yellow-400',
-  wrong:   'bg-rose-400   border-rose-500',
-  higher:  'bg-rose-400   border-rose-500',
-  lower:   'bg-rose-400   border-rose-500',
+  correct: 'bg-green-500',
+  partial: 'bg-yellow-400',
+  wrong:   'bg-red-500',
+  higher:  'bg-red-500',
+  lower:   'bg-red-500',
 }
+
+// Sombras inset que simulan el "tile en relieve" típico del pixel art:
+// borde superior-izquierdo claro + borde inferior-derecho oscuro.
+const RAISED_TILE_SHADOW =
+  'shadow-[inset_2px_2px_0_rgba(255,255,255,0.45),inset_-2px_-2px_0_rgba(0,0,0,0.45)]'
+
+// Sombra de texto al estilo NES: pequeño contorno negro alrededor del texto
+// para que sea legible sobre cualquier color de fondo.
+const PIXEL_TEXT_SHADOW = {
+  textShadow: '1px 1px 0 rgba(0,0,0,0.85), -1px 1px 0 rgba(0,0,0,0.85), 1px -1px 0 rgba(0,0,0,0.85), -1px -1px 0 rgba(0,0,0,0.85)',
+} as const
 
 // ─── Flecha para numéricos ─────────────────────────────────────────────────────
 
@@ -93,7 +104,10 @@ function Arrow({ status }: { status: NumericStatus }) {
   // "higher" significa que el objetivo es más alto → el intento es bajo → flecha arriba
   // "lower"  significa que el objetivo es más bajo  → el intento es alto → flecha abajo
   return (
-    <span className="block text-white text-[10px] leading-none mt-0.5">
+    <span
+      className="block text-white text-[11px] leading-none mt-0.5"
+      style={PIXEL_TEXT_SHADOW}
+    >
       {status === 'higher' ? '▲' : '▼'}
     </span>
   )
@@ -110,17 +124,20 @@ function Cell({
   children: ReactNode
   animDelay?: number
 }) {
-  const style = animDelay !== undefined
+  const animStyle = animDelay !== undefined
     ? { animation: `cardFlip 0.7s cubic-bezier(0.22,1,0.36,1) both`, animationDelay: `${animDelay}ms`, opacity: 0 }
-    : undefined
+    : {}
 
   return (
     <div
-      style={style}
-      className={`flex flex-col items-center justify-center rounded-xl border-2 ${cellBg[status]} 
-        min-w-[72px] w-full h-16 px-1 shadow-md`}
+      style={animStyle}
+      className={`flex flex-col items-center justify-center border-[3px] border-black ${cellBg[status]} ${RAISED_TILE_SHADOW}
+        min-w-[72px] w-full h-16 px-1`}
     >
-      <span className={`${pixelFont.className} text-[9px] text-white text-center leading-tight`}>
+      <span
+        className={`${pixelFont.className} text-[9px] text-white text-center leading-tight`}
+        style={PIXEL_TEXT_SHADOW}
+      >
         {children}
       </span>
       {(status === 'higher' || status === 'lower') && <Arrow status={status} />}
@@ -131,21 +148,22 @@ function Cell({
 // ─── Celda de imagen ──────────────────────────────────────────────────────────
 
 function PokemonCell({ entry, animDelay }: { entry: GuessEntry; animDelay?: number }) {
-  const style = animDelay !== undefined
+  const animStyle = animDelay !== undefined
     ? { animation: `cardFlip 0.7s cubic-bezier(0.22,1,0.36,1) both`, animationDelay: `${animDelay}ms`, opacity: 0 }
-    : undefined
+    : {}
 
   return (
     <div
-      style={style}
-      className="flex flex-col items-center justify-center rounded-xl border-2 border-amber-400 bg-white min-w-[72px] w-full h-16 shadow-md overflow-hidden"
+      style={animStyle}
+      className={`flex flex-col items-center justify-center border-[3px] border-black bg-slate-100 ${RAISED_TILE_SHADOW}
+        min-w-[72px] w-full h-16 overflow-hidden relative`}
     >
       <Image
         src={entry.pokemon.imagen}
         alt={entry.pokemon.nombre}
         width={52}
         height={52}
-        className="object-contain"
+        className="object-contain drop-shadow-[1px_1px_0_rgba(0,0,0,0.4)]"
       />
     </div>
   )
@@ -159,8 +177,14 @@ function HeaderRow() {
   return (
     <div className="grid grid-cols-8 gap-2 w-full mb-2">
       {HEADERS.map((h) => (
-        <div key={h} className="flex items-center justify-center">
-          <span className={`${pixelFont.className} text-[8px] text-amber-200 text-center leading-tight`}>
+        <div
+          key={h}
+          className={`flex items-center justify-center border-[2px] border-black bg-zinc-900 h-7 ${RAISED_TILE_SHADOW}`}
+        >
+          <span
+            className={`${pixelFont.className} text-[8px] text-yellow-300 text-center leading-tight`}
+            style={PIXEL_TEXT_SHADOW}
+          >
             {h}
           </span>
         </div>

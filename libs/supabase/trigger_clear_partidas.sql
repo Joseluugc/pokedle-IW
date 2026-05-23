@@ -1,9 +1,10 @@
 -- Trigger: clean all game sessions when a new daily Pokémon is inserted
 --
--- Run this once in the Supabase SQL editor (Dashboard → SQL Editor → New query).
--- The trigger fires AFTER each INSERT on daily_pokemon, which happens once per day
--- when getOrCreateDailyPokemon() creates tomorrow's entry. All rows in
--- partidas_diarias are deleted so every player starts fresh.
+-- Run this in the Supabase SQL editor (Dashboard → SQL Editor → New query).
+-- The trigger fires AFTER each INSERT on daily_pokemon.
+--
+-- IMPORTANT: the DELETE is wrapped in an exception handler so that any failure
+-- inside the trigger NEVER rolls back the INSERT on daily_pokemon.
 
 -- 1. Trigger function
 CREATE OR REPLACE FUNCTION clear_partidas_on_new_daily()
@@ -12,7 +13,12 @@ LANGUAGE plpgsql
 SECURITY DEFINER  -- runs as the function owner (postgres), bypassing RLS
 AS $$
 BEGIN
-  DELETE FROM public.partidas_diarias;
+  BEGIN
+    DELETE FROM public.partidas_diarias;
+  EXCEPTION WHEN OTHERS THEN
+    -- Log but never abort the transaction that caused the trigger
+    RAISE WARNING 'clear_partidas_on_new_daily: could not clear partidas_diarias: %', SQLERRM;
+  END;
   RETURN NEW;
 END;
 $$;
