@@ -237,15 +237,17 @@ export default function GuessGrid({ guesses }: GuessGridProps) {
   if (guesses.length === 0) return null
 
   return (
-    <div className="w-full max-w-3xl flex flex-col gap-2 mt-4">
-      <HeaderRow />
-      {guesses.map((entry, index) => (
-        <GuessRow
-          key={`${entry.pokemon.id}-${entry.pokemon.nombre}-${index}`}
-          entry={entry}
-          animate={index === guesses.length - 1}
-        />
-      ))}
+    <div className="w-full max-w-3xl mt-4 overflow-x-auto overscroll-x-contain">
+      <div className="flex flex-col gap-2 min-w-[640px] px-1 pb-1">
+        <HeaderRow />
+        {guesses.map((entry, index) => (
+          <GuessRow
+            key={`${entry.pokemon.id}-${entry.pokemon.nombre}-${index}`}
+            entry={entry}
+            animate={index === guesses.length - 1}
+          />
+        ))}
+      </div>
     </div>
   )
 }

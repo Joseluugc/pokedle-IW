@@ -319,12 +319,19 @@ const DiarioPage = () => {
 
   return (
     <main>
-      <section className="flex flex-col items-center justify-center text-center gap-12 px-8 py-12">
-        <Link href="/" className="transition-opacity hover:opacity-80 active:opacity-60">
-          <Image src="/logo.webp" alt="Pokedle – Volver al inicio" width={500} height={500} priority />
+      <section className="flex flex-col items-center justify-center text-center gap-8 sm:gap-12 px-4 sm:px-8 py-8 sm:py-12">
+        <Link href="/" className="transition-opacity hover:opacity-80 active:opacity-60 w-full max-w-[500px]">
+          <Image
+            src="/logo.webp"
+            alt="Pokedle – Volver al inicio"
+            width={500}
+            height={500}
+            priority
+            className="w-full h-auto"
+          />
         </Link>
 
-        <p className={`${pixelFont.className} text-base bg-gradient-to-r from-yellow-200 via-amber-400 to-orange-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] tracking-wide leading-relaxed`}>
+        <p className={`${pixelFont.className} text-sm sm:text-base bg-gradient-to-r from-yellow-200 via-amber-400 to-orange-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] tracking-wide leading-relaxed px-2`}>
           ¡¿Cuál es este pokémon?!
         </p>
 
@@ -448,11 +455,11 @@ const DiarioPage = () => {
       {/* Overlay de victoria */}
       {showWinAnimation && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
           style={{ animation: 'fadeIn 0.3s ease-out' }}
         >
           <div
-            className="relative flex flex-col items-center gap-6 bg-gradient-to-b from-yellow-100 to-amber-100 border-4 border-amber-400 rounded-2xl px-10 py-10 shadow-[0_0_60px_rgba(251,191,36,0.9)]"
+            className="relative flex flex-col items-center gap-4 sm:gap-6 bg-gradient-to-b from-yellow-100 to-amber-100 border-4 border-amber-400 rounded-2xl px-6 py-8 sm:px-10 sm:py-10 shadow-[0_0_60px_rgba(251,191,36,0.9)] w-full max-w-sm"
             style={{ animation: 'bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1)' }}
           >
             {/* Destellos decorativos */}

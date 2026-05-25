@@ -100,7 +100,7 @@ export default function Login() {
   };
 
   return (
-    <main className={`p-8 md:p-24 min-h-screen ${font.className}`} data-theme={config.colors.theme}>
+    <main className={`p-4 sm:p-8 md:p-24 min-h-screen ${font.className}`} data-theme={config.colors.theme}>
       <div className="text-center mb-4">
         <Link href="/" className="btn btn-ghost btn-sm">
           <svg
@@ -119,7 +119,7 @@ export default function Login() {
         </Link>
       </div>
 
-      <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-center mb-8">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-center mb-8 px-2">
         {mode === "signin" ? `Iniciar sesión en` : `Crear cuenta en`} {config.appName}
       </h1>
 
