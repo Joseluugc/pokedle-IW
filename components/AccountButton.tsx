@@ -66,7 +66,7 @@ const AccountButton = () => {
                 {displayName.charAt(0)}
               </span>
             )}
-            <span className="max-w-[100px] truncate">{displayName}</span>
+            <span className="hidden sm:inline max-w-[100px] truncate">{displayName}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
