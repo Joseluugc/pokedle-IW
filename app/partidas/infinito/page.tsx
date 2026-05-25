@@ -77,7 +77,9 @@ const InfinitoPage = () => {
   const [giveUpPokemon, setGiveUpPokemon] = useState<{ nombre: string; imagen: string } | null>(null)
   const [isGivingUp, setIsGivingUp] = useState(false)
   const [showGiveUpAnimation, setShowGiveUpAnimation] = useState(false)
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1)
   const containerRef = useRef<HTMLDivElement>(null)
+  const suggestionRefs = useRef<(HTMLLIElement | null)[]>([])
 
   // ─── Inicializar partida nueva ────────────────────────────────────────────
 
@@ -166,6 +168,7 @@ const InfinitoPage = () => {
       try {
         const results = await searchPokemonByNamePartial(inputValue)
         setSuggestions(results)
+        setActiveSuggestionIndex(-1)
         setShowSuggestions(results.length > 0)
       } catch {
         setSuggestions([])
@@ -253,6 +256,7 @@ const InfinitoPage = () => {
     setInputValue(nombre)
     setShowSuggestions(false)
     setSuggestions([])
+    setActiveSuggestionIndex(-1)
     handleSubmitGuess(nombre)
   }
 
@@ -280,9 +284,29 @@ const InfinitoPage = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === 'ArrowDown') {
                     e.preventDefault()
-                    handleSubmitGuess()
+                    if (!showSuggestions || suggestions.length === 0) return
+                    const next = activeSuggestionIndex < suggestions.length - 1 ? activeSuggestionIndex + 1 : 0
+                    setActiveSuggestionIndex(next)
+                    suggestionRefs.current[next]?.scrollIntoView({ block: 'nearest' })
+                  } else if (e.key === 'ArrowUp') {
+                    e.preventDefault()
+                    if (!showSuggestions || suggestions.length === 0) return
+                    const prev = activeSuggestionIndex > 0 ? activeSuggestionIndex - 1 : suggestions.length - 1
+                    setActiveSuggestionIndex(prev)
+                    suggestionRefs.current[prev]?.scrollIntoView({ block: 'nearest' })
+                  } else if (e.key === 'Enter') {
+                    e.preventDefault()
+                    if (showSuggestions && suggestions.length > 0) {
+                      const idx = activeSuggestionIndex >= 0 ? activeSuggestionIndex : 0
+                      handleSelect(suggestions[idx].nombre)
+                    } else {
+                      handleSubmitGuess()
+                    }
+                  } else if (e.key === 'Escape') {
+                    setShowSuggestions(false)
+                    setActiveSuggestionIndex(-1)
                   }
                 }}
                 onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
@@ -330,11 +354,13 @@ const InfinitoPage = () => {
               className="absolute z-50 w-full mt-1 bg-pink-50 border-2 border-pink-400 rounded-md shadow-[0_4px_20px_rgba(236,72,153,0.4)] max-h-60 overflow-y-auto overscroll-none"
               style={{ WebkitOverflowScrolling: 'auto' }}
             >
-              {suggestions.map((poke) => (
+              {suggestions.map((poke, idx) => (
                 <li
                   key={poke.nombre}
+                  ref={(el) => { suggestionRefs.current[idx] = el }}
                   onMouseDown={() => handleSelect(poke.nombre)}
-                  className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-pink-100 transition-colors duration-150 border-b border-pink-200 last:border-b-0"
+                  onMouseEnter={() => setActiveSuggestionIndex(idx)}
+                  className={`flex items-center gap-3 px-3 py-2 cursor-pointer transition-colors duration-150 border-b border-pink-200 last:border-b-0 ${idx === activeSuggestionIndex ? 'bg-pink-200' : 'hover:bg-pink-100'}`}
                 >
                   <Image
                     src={poke.imagen}
