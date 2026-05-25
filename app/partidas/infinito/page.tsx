@@ -15,12 +15,14 @@ type InfinitoSession = {
   guesses: GuessEntry[]
   isGameWon: boolean
   winPokemonName: string
+  winPokemonImage: string
 }
 
 const emptySession = (): InfinitoSession => ({
   guesses: [],
   isGameWon: false,
   winPokemonName: '',
+  winPokemonImage: '',
 })
 
 const loadSession = (): InfinitoSession => {
@@ -32,6 +34,7 @@ const loadSession = (): InfinitoSession => {
       guesses: Array.isArray(parsed.guesses) ? parsed.guesses : [],
       isGameWon: typeof parsed.isGameWon === 'boolean' ? parsed.isGameWon : false,
       winPokemonName: typeof parsed.winPokemonName === 'string' ? parsed.winPokemonName : '',
+      winPokemonImage: typeof parsed.winPokemonImage === 'string' ? parsed.winPokemonImage : '',
     }
   } catch {
     return emptySession()
@@ -69,6 +72,7 @@ const InfinitoPage = () => {
   const [isGameWon, setIsGameWon] = useState(false)
   const [showWinAnimation, setShowWinAnimation] = useState(false)
   const [winPokemonName, setWinPokemonName] = useState('')
+  const [winPokemonImage, setWinPokemonImage] = useState('')
   const [isGivenUp, setIsGivenUp] = useState(false)
   const [giveUpPokemon, setGiveUpPokemon] = useState<{ nombre: string; imagen: string } | null>(null)
   const [isGivingUp, setIsGivingUp] = useState(false)
@@ -84,6 +88,7 @@ const InfinitoPage = () => {
     setGuesses([])
     setIsGameWon(false)
     setWinPokemonName('')
+    setWinPokemonImage('')
     setShowWinAnimation(false)
     setIsGivenUp(false)
     setGiveUpPokemon(null)
@@ -121,6 +126,7 @@ const InfinitoPage = () => {
       setGuesses(session.guesses)
       setIsGameWon(session.isGameWon)
       setWinPokemonName(session.winPokemonName)
+      setWinPokemonImage(session.winPokemonImage)
       setIsGameLoading(false)
     } else {
       // Sin sesión → nueva partida (asigna cookie httpOnly con target)
@@ -203,9 +209,12 @@ const InfinitoPage = () => {
       setSuggestions([])
       setShowSuggestions(false)
 
+      const wonImage = won ? entry.pokemon.imagen : winPokemonImage
+
       if (won) {
         setIsGameWon(true)
         setWinPokemonName(wonName)
+        setWinPokemonImage(wonImage)
         setTimeout(() => setShowWinAnimation(true), 2500)
       }
 
@@ -213,6 +222,7 @@ const InfinitoPage = () => {
         guesses: newGuesses,
         isGameWon: won,
         winPokemonName: won ? wonName : '',
+        winPokemonImage: won ? wonImage : '',
       })
     } catch (error) {
       setGuessError(error instanceof Error ? error.message : 'Error desconocido')
@@ -382,11 +392,11 @@ const InfinitoPage = () => {
             <div className="absolute -bottom-3 -right-3 text-2xl animate-bounce" style={{ animationDelay: '0.15s' }}>🎊</div>
 
             <Image
-              src="/pokeball.webp"
-              alt="¡Ganaste!"
+              src={winPokemonImage}
+              alt={winPokemonName}
               width={90}
               height={90}
-              className="drop-shadow-[0_0_16px_rgba(236,72,153,0.8)]"
+              className="object-contain drop-shadow-[0_0_16px_rgba(236,72,153,0.8)]"
               style={{ animation: 'spinBounce 0.8s ease-out' }}
             />
 
