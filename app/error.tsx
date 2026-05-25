@@ -14,12 +14,12 @@ export default function Error({
 }) {
   return (
     <>
-      <div className="h-screen w-full flex flex-col justify-center items-center text-center gap-6 p-6">
-        <div className="p-6 bg-white rounded-xl">
+      <div className="min-h-screen w-full flex flex-col justify-center items-center text-center gap-4 sm:gap-6 p-4 sm:p-6">
+        <div className="p-4 sm:p-6 bg-white rounded-xl">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             data-name="Layer 1"
-            className="w-36 h-36 md:w-64 md:h-64"
+            className="w-28 h-28 sm:w-36 sm:h-36 md:w-64 md:h-64"
             viewBox="0 0 509.04617 507.58297"
           >
             <path

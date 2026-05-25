@@ -9,7 +9,7 @@ export const metadata = getSEOTags({
 
 const TOS = () => {
   return (
-    <main className="max-w-3xl mx-auto px-4 py-10">
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
       <Link href="/" className="btn btn-ghost mb-6 inline-flex">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -26,9 +26,9 @@ const TOS = () => {
         Back
       </Link>
 
-      <article className="bg-base-100 rounded-2xl shadow-lg px-8 py-10 md:px-12">
+      <article className="bg-base-100 rounded-2xl shadow-lg px-5 py-8 sm:px-8 sm:py-10 md:px-12 break-words">
         <header className="mb-8 pb-6 border-b border-base-200">
-          <h1 className="text-3xl font-extrabold mb-2">
+          <h1 className="text-2xl sm:text-3xl font-extrabold mb-2">
             Terms of Service for {config.appName}
           </h1>
           <p className="text-sm text-base-content/50">

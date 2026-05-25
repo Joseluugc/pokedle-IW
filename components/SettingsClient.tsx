@@ -128,8 +128,8 @@ const SettingsClient = ({
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-yellow-100 px-4 py-10">
-      <div className="max-w-4xl mx-auto space-y-10">
+    <main className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-yellow-100 px-4 sm:px-6 py-6 sm:py-10">
+      <div className="max-w-4xl mx-auto space-y-8 sm:space-y-10">
         <header className="space-y-6">
           <div className="flex items-center justify-between">
             <Link
@@ -144,10 +144,10 @@ const SettingsClient = ({
           </div>
 
           <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-yellow-300">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-yellow-300">
               Configuración de la cuenta
             </h1>
-            <p className="mt-2 text-yellow-100/70">
+            <p className="mt-2 text-sm sm:text-base text-yellow-100/70 break-words">
               Gestiona tu perfil de entrenador{" "}
               <span className="font-semibold text-yellow-200">@{displayUsername}</span>{" "}
               <span className="text-yellow-100/40">· {email}</span>
@@ -330,7 +330,7 @@ const SettingsCard = ({ title, description, accent = "default", children }: Sett
   const isDanger = accent === "danger";
   return (
     <section
-      className={`rounded-2xl border p-6 shadow-xl backdrop-blur-sm ${
+      className={`rounded-2xl border p-4 sm:p-6 shadow-xl backdrop-blur-sm ${
         isDanger
           ? "border-red-500/30 bg-red-950/30"
           : "border-yellow-500/20 bg-gray-900/60"

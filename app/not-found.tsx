@@ -5,11 +5,11 @@ import ButtonSupport from "@/components/ButtonSupport";
 // Show a cute SVG with your primary color
 export default function Custom404() {
   return (
-    <section className="relative bg-base-100 text-base-content h-screen w-full flex flex-col justify-center gap-8 items-center p-10">
-      <div className="p-6 bg-white rounded-xl">
+    <section className="relative bg-base-100 text-base-content min-h-screen w-full flex flex-col justify-center gap-6 sm:gap-8 items-center p-4 sm:p-10">
+      <div className="p-4 sm:p-6 bg-white rounded-xl">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="w-56 h-56"
+          className="w-40 h-40 sm:w-56 sm:h-56"
           viewBox="0 0 860.13137 571.14799"
         >
           <path
