@@ -1,0 +1,4 @@
+=== PRUEBA DE SEGURIDAD: Cron ===
+Status: 401
+Body: {"error":"No autorizado"}
+RESULTADO: Acceso denegado o no encontrado (esperado sin auth).
